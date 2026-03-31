@@ -1,4 +1,5 @@
 import {UserAuth} from "../context/AuthContext.tsx";
+import {Link} from "react-router-dom";
 
 export function Home() {
 
@@ -6,6 +7,23 @@ export function Home() {
     console.log(session);
 
     return (
-        <div>Accueil</div>
+        <div>
+            <h1>
+                Accueil
+            </h1>
+            <div>
+                <ul>
+                    <li>
+                        <Link to="/dashboard">Dashboard</Link>
+                    </li>
+                    <li>
+                        <Link to="/signup">Signup</Link>
+                    </li>
+                    <li>
+                        <Link to="/login">Login</Link>
+                    </li>
+                </ul>
+            </div>
+        </div>
     )
 }
