@@ -1,15 +1,13 @@
-import {createContext, useState, useContext, ReactNode, useEffect} from "react";
+import {createContext, useState, useContext, type ReactNode, useEffect} from "react";
 import {supabase} from "../supabaseClient.tsx";
-import {getProfileByUserId} from "../services/profileService.tsx";
 
 const AuthContext = createContext<any>(undefined);
 
 export const AuthContextProvider = ({children}: { children: ReactNode }) => {
     const [session, setSession] = useState<any>(undefined);
-    const [profile, setProfile] = useState<any>(null);
 
     // Sign up
-    const signUpNewUser = async (email, password) => {
+    const signUpNewUser = async (email: string, password: string) => {
         const {data, error} = await supabase.auth.signUp({
             email: email,
             password: password,
@@ -23,7 +21,7 @@ export const AuthContextProvider = ({children}: { children: ReactNode }) => {
     };
 
     // Sign in
-    const signInUser = async (email, password) => {
+    const signInUser = async (email: string, password: string) => {
         try {
             const {data, error} = await supabase.auth.signInWithPassword({
                 email: email,
@@ -40,6 +38,10 @@ export const AuthContextProvider = ({children}: { children: ReactNode }) => {
         }
     }
 
+    // Sign out
+
+    const signOut = () => supabase.auth.signOut();
+
     useEffect(() => {
         supabase.auth.getSession().then(({data: {session}}) => {
             setSession(session);
@@ -50,31 +52,8 @@ export const AuthContextProvider = ({children}: { children: ReactNode }) => {
         })
     }, []);
 
-    // Sign out
-    const signOut = () => {
-        const {error} = supabase.auth.signOut();
-        if (error) {
-            console.error("il y a eu un probleme : ", error);
-        }
-    }
-
-    useEffect(() => {
-        (async () => {
-            if (session?.user?.id) {
-                try {
-                    const data = await getProfileByUserId(session.user.id);
-                    setProfile(data);
-                } catch (err) {
-                    console.error("Erreur profil:", err);
-                }
-            } else {
-                setProfile(null);
-            }
-        })();
-    }, [session]);
-
     return (
-        <AuthContext.Provider value={{session, profile, signUpNewUser, signInUser, signOut}}>
+        <AuthContext.Provider value={{session, signUpNewUser, signInUser, signOut}}>
             {children}
         </AuthContext.Provider>
     );
