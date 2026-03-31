@@ -82,7 +82,7 @@ export function Dashboard() {
             <br/>
             <button onClick={handleQuestion}>Lancer le questionnaire</button>
             <br/>
-            <button onClick={handleSignOut}>Sign out</button>
+            <button onClick={handleSignOut}>Se déconnecter</button>
             <br/>
         </div>
     )
