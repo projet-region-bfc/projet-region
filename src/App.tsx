@@ -4,6 +4,7 @@ import {Home} from "./pages/home.tsx";
 import {Login} from "./pages/login.tsx";
 import {Signup} from "./pages/signup.tsx";
 import {Dashboard} from "./pages/dashboard.tsx";
+import {PageCharlie} from "./pages/pageCharlie.tsx";
 
 function App() {
     return (
@@ -14,6 +15,7 @@ function App() {
                     <Route path="/login" element={<Login/>}/>
                     <Route path="/signup" element={<Signup/>}/>
                     <Route path="/dashboard" element={<Dashboard/>}/>
+                    <Route path="/pageCharlie" element={<PageCharlie />} />
                 </Routes>
             </BrowserRouter>
         </div>

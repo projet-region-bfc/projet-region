@@ -1,5 +1,6 @@
 import {createContext, useState, useContext, ReactNode, useEffect} from "react";
 import {supabase} from "../supabaseClient.tsx";
+import {getProfileByUserId} from "../services/profileService.tsx";
 
 const AuthContext = createContext<any>(undefined);
 
@@ -57,24 +58,19 @@ export const AuthContextProvider = ({children}: { children: ReactNode }) => {
         }
     }
 
-    const getUserProfile = async (userId: string) => {
-        const { data, error } = await supabase
-            .from('profile')
-            .select('name, last_name')
-            .eq('uid', userId)
-            .single();
-
-        if (!error && data) {
-            setProfile(data);
-        }
-    };
-
     useEffect(() => {
-        if (session?.user?.id) {
-            getUserProfile(session.user.id);
-        } else {
-            setProfile(null);
-        }
+        (async () => {
+            if (session?.user?.id) {
+                try {
+                    const data = await getProfileByUserId(session.user.id);
+                    setProfile(data);
+                } catch (err) {
+                    console.error("Erreur profil:", err);
+                }
+            } else {
+                setProfile(null);
+            }
+        })();
     }, [session]);
 
     return (
