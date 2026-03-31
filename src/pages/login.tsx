@@ -19,7 +19,7 @@ export function Login() {
         try {
             const result = await signInUser(email, password);
             if (result.success) {
-                navigate("/dashboard");
+                navigate("/home");
             }
         } catch (err) {
             setError("Une erreur c'est produite");
