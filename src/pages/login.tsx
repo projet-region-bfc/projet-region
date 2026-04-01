@@ -207,7 +207,7 @@ export function Login() {
             <label style={styles.label}>Mot de passe</label>
             <input 
               type="password" 
-              placeholder="........"
+              placeholder="••••••••"
               onChange={(e) => setPassword(e.target.value)}
               required
               style={{...styles.input, ...styles.inputPass}} 
