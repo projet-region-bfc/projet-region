@@ -20,7 +20,6 @@ export function Questionnaire() {
             <p>Thématique .../20</p>
             <p>Page .../30</p>
 
-            {/* balise native sans style */}
             <progress value={progression} max="100"></progress>
             <p>Progression : {progression}%</p>
 
@@ -29,8 +28,11 @@ export function Questionnaire() {
 
             <h2>Thème</h2>
             <h3>Catégorie</h3>
-            <p>Sélectionnez le niveau qui correspond le mieux à votre pratique actuelle :</p>
-
+            <p>Sélectionnez la réponse qui correspond le mieux à votre pratique actuelle :</p>
+            <div>Reponse 1</div>
+            <div>Reponse 2</div>
+            <div>Reponse 3</div>
+            <div>Reponse 4</div>
 
 
             {progression < 100 && (
