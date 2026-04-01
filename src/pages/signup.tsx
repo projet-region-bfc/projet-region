@@ -119,6 +119,7 @@ export function Signup() {
             boxSizing: "border-box",
             outline: "none",
             backgroundColor: "#F9FAFB",
+            color: "#333",
         },
         submitButton: {
             width: "100%",
