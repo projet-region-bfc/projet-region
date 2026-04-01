@@ -17,13 +17,11 @@ export function Dashboard() {
 
     useEffect(() => {
         (async () => {
-            if (!session?.user?.id) return;
-
             try {
                 setLoading(true);
                 const [profileData, statsData] = await Promise.all([
                     getProfileByUserId(session.user.id),
-                    getThemeStats(session.user.id),
+                    getThemeStats(session.user.id, 'ASC'),
                 ]);
 
                 setProfile(profileData);
@@ -51,8 +49,6 @@ export function Dashboard() {
         }
     }
 
-    if (!session) return <p>Accès refusé. Connectez-vous.</p>;
-
     return (
         <div>
             <h1>Dashboard</h1>
@@ -61,9 +57,9 @@ export function Dashboard() {
             <h3>Thèmes à améliorer (Top 3 pires notes) :</h3>
             {worstThemes.length > 0 ? (
                 <ul>
-                    {worstThemes.map((item: any, index: number) => (
+                    {worstThemes.map((el: any, index: number) => (
                         <li key={index}>
-                            <strong>{item.theme}</strong> : {item.moyenne_points} / 5
+                            <strong>{el.theme}</strong> : {el.moyenne_points} / 5
                         </li>
                     ))}
                 </ul>

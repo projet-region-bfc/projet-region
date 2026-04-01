@@ -56,8 +56,8 @@ export function Questionnaire() {
 
 
     const faireAvancer = () => {
-        if (indexActuelle < listeCategory.length - 1) {
-            setIndexActuelle(indexActuelle + 1);
+        if (progression < 100) {
+            setProgression(progression + 5);
         }
     };
 
