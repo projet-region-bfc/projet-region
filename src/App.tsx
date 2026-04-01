@@ -4,8 +4,10 @@ import {Home} from "./pages/home.tsx";
 import {Login} from "./pages/login.tsx";
 import {Signup} from "./pages/signup.tsx";
 import {Dashboard} from "./pages/dashboard.tsx";
-import {Logintest} from "./pages/logintest.tsx";
-import {Signuptest} from "./pages/signuptest.tsx";
+import PageLuisa from "./pages/PageLuisa.tsx";
+import {PageCharlie} from "./pages/pageCharlie.tsx";
+import {Questionnaire} from "./pages/Questionnaire.tsx";
+
 
 function App() {
     return (
@@ -16,8 +18,9 @@ function App() {
                     <Route path="/login" element={<Login/>}/>
                     <Route path="/signup" element={<Signup/>}/>
                     <Route path="/dashboard" element={<Dashboard/>}/>
-                    <Route path="/logintest" element={<Logintest/>}/>
-                    <Route path="/signuptest" element={<Signuptest/>}/>
+                    <Route path="/PageLuisa" element={<PageLuisa/>}/>
+                    <Route path="/pageCharlie" element={<PageCharlie />}/>
+                    <Route path="/Questionnaire" element={<Questionnaire/>}/>
                 </Routes>
             </BrowserRouter>
         </div>
