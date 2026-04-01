@@ -2,30 +2,40 @@ import {UserAuth} from "../context/AuthContext.tsx";
 import {useNavigate} from "react-router-dom";
 import {useEffect, useState} from "react";
 import {getProfileByUserId, type UserProfile} from "../services/profileService.tsx";
-import * as React from "react";
 import {getThemeStats, type ThemeStat} from "../services/themeService.tsx";
+import {getTotalPoints, type TotalPoints} from "../services/questionnaire_sessionsService.tsx";
+import * as React from "react";
 
 export function Dashboard() {
     const {session, signOut} = UserAuth();
     const navigate = useNavigate();
+
     const [profile, setProfile] = useState<UserProfile | null>(null);
     const [worstThemes, setWorstThemes] = useState<ThemeStat[]>([]);
+    const [totalPoints, setTotalPoints] = useState<TotalPoints | null>(null);
     const [role, setRole] = useState<string>("Agent");
     const [loading, setLoading] = useState(true);
 
     console.log(session);
 
     useEffect(() => {
+        if (session === null) {
+            setLoading(false);
+            return;
+        }
+
+        if (!session?.user?.id) return;
         (async () => {
             try {
                 setLoading(true);
-                const [profileData, statsData] = await Promise.all([
+                const [profileData, statsData, pointsData] = await Promise.all([
                     getProfileByUserId(session.user.id),
                     getThemeStats(session.user.id, 'ASC'),
+                    getTotalPoints(session.user.id),
                 ]);
-
                 setProfile(profileData);
                 setWorstThemes(statsData);
+                setTotalPoints(pointsData);
             } catch (err) {
                 console.error("Erreur chargement dashboard:", err);
             } finally {
@@ -36,22 +46,24 @@ export function Dashboard() {
 
     console.log(role);
 
+    if (session === undefined) {
+        return <p>Vérification de l'authentification...</p>;
+    }
+    if (session === null) {
+        return <p>Accès refusé, veuillez vous connecter.</p>;
+    }
     if (loading) return <p>Chargement de vos statistiques...</p>;
-    if (!session) return <p>Accès refusé, veuillez vous connecter.</p>;
 
     const handleSignOut = async (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
-        try {
-            await signOut();
-            navigate("/");
-        } catch (err) {
-            console.error(err);
-        }
-    }
+        await signOut();
+        navigate("/");
+    };
 
     return (
         <div>
             <h1>Dashboard</h1>
+            <p>Points total : {totalPoints?.total_points ?? 0}</p>
             <h2>Bienvenue {session?.user?.email}</h2>
             <p>{profile?.name} {profile?.last_name}</p>
             <h3>Thèmes à améliorer (Top 3 pires notes) :</h3>
