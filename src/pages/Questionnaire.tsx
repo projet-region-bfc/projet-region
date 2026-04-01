@@ -1,6 +1,12 @@
 import { useState, useEffect } from "react";
 import { getCategoryWithTheme} from "../services/categoryService.tsx";
 
+interface ReponseData{
+    uid: string;
+    reponse_text: string;
+    points: number;
+    target_role: string;
+}
 
 interface CategoryData {
     uid: string;
@@ -8,6 +14,7 @@ interface CategoryData {
     theme: {
         name: string;
     } | null;
+    reponse: ReponseData[];
 }
 
 
@@ -19,6 +26,8 @@ export function Questionnaire() {
     const [indexActuelle, setIndexActuelle] = useState(0);
 
     const [loading, setLoading] = useState(true);
+
+    const [choixUtilisateur, setChoixUtilisateur] = useState<Record<string, string>>({});
 
     useEffect(() => {
         (async () => {
@@ -38,6 +47,13 @@ export function Questionnaire() {
     const progression = listeCategory.length > 0
         ? Math.round((indexActuelle / listeCategory.length) * 100) : 0;
 
+    const handleSelection = (categoryId: string, reponseId: string) => {
+        setChoixUtilisateur({
+            ...choixUtilisateur,
+            [categoryId]: reponseId
+        });
+    };
+
 
     const faireAvancer = () => {
         if (indexActuelle < listeCategory.length - 1) {
@@ -54,6 +70,8 @@ export function Questionnaire() {
         return <p>Aucune données trouvées.</p>;
 
     const donneeActuelle = listeCategory[indexActuelle];
+
+    const reponseSelectionee = choixUtilisateur[donneeActuelle.uid];
 
     return (
         <div>
@@ -73,15 +91,28 @@ export function Questionnaire() {
             <p>Sélectionnez le niveau qui correspond le mieux à votre pratique actuelle :</p>
 
 
+            <div>
+                {donneeActuelle.reponse.map((rep) => (
+                    <button key={rep.uid} onClick={() => handleSelection(donneeActuelle.uid, rep.uid)}>
+                        {rep.reponse_text}
+                    </button>
+                ))}
+            </div>
+
+            <br />
+
+
 
             {indexActuelle < listeCategory.length - 1 && (
-                <button onClick={faireAvancer}>
+                <button onClick={faireAvancer}
+                disabled={!reponseSelectionee}>
                     Question suivante
                 </button>
             )}
 
             {indexActuelle === listeCategory.length - 1 && (
-                <button onClick={handleVoirResultats}>
+                <button onClick={handleVoirResultats}
+                disabled={!reponseSelectionee}>
                     Voir les résultats !
                 </button>
             )}
