@@ -1,6 +1,6 @@
-import { useState } from "react";
-import { UserAuth } from "../context/AuthContext.tsx";
-import { Link, useNavigate } from "react-router-dom";
+import {useState} from "react";
+import {UserAuth} from "../context/AuthContext.tsx";
+import {Link, useNavigate} from "react-router-dom";
 import logoImg from "../assets/logo.png";
 
 export function Signup() {
@@ -9,7 +9,7 @@ export function Signup() {
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
 
-    const { signUpNewUser } = UserAuth();
+    const {signUpNewUser} = UserAuth();
     const navigate = useNavigate();
 
     const handleSignUp = async (e) => {
@@ -146,65 +146,66 @@ export function Signup() {
         <div style={styles.page}>
             <div style={styles.header}>
                 <div style={styles.logoContainer}>
-                    <img src={logoImg} alt="Logo" style={styles.logoImg} />
+                    <img src={logoImg} alt="Logo" style={styles.logoImg}/>
                     <h1 style={styles.logoText}>La région</h1>
                 </div>
-                        <br/>
-        <p style={{ fontSize: "16px", margin: 0, opacity: 0.9, color: "white" }}>
-         Créer votre compte pour accéder à votre espace
-        </p>
+                <br/>
+                <p style={{fontSize: "16px", margin: 0, opacity: 0.9, color: "white"}}>
+                    Créer votre compte pour accéder à votre espace
+                </p>
             </div>
 
-                {/* Carte d'inscription */}
-                <div style={styles.card}>
-                    <h2 style={styles.title}>Créer un compte</h2>
-                    <p style={styles.subtitle}>Remplissez les informations ci-dessous</p>
+            {/* Carte d'inscription */}
+            <div style={styles.card}>
+                <h2 style={styles.title}>Créer un compte</h2>
+                <p style={styles.subtitle}>Remplissez les informations ci-dessous</p>
 
-                    <form onSubmit={handleSignUp} style={styles.form}>
-                        <div style={styles.inputGroup}>
-                            <label style={styles.label}>Mail professionnel</label>
-                            <input
-                                onChange={(e) => setEmail(e.target.value)}
-                                type="email"
-                                placeholder="prenom.nom@bourgognefranchecomte."
-                                style={styles.input}
-                                required
-                            />
-                        </div>
+                <form onSubmit={handleSignUp} style={styles.form}>
+                    <div style={styles.inputGroup}>
+                        <label style={styles.label}>Mail professionnel</label>
+                        <input
+                            onChange={(e) => setEmail(e.target.value)}
+                            type="email"
+                            placeholder="prenom.nom@bourgognefranchecomte"
+                            style={styles.input}
+                            required
+                        />
+                    </div>
 
-                        <div style={styles.inputGroup}>
-                            <label style={styles.label}>Mot de passe</label>
-                            <input
-                                onChange={(e) => setPassword(e.target.value)}
-                                type="password"
-                                placeholder="••••••••"
-                                style={styles.input}
-                                required
-                            />
-                        </div>
+                    <div style={styles.inputGroup}>
+                        <label style={styles.label}>Mot de passe</label>
+                        <input
+                            onChange={(e) => setPassword(e.target.value)}
+                            type="password"
+                            placeholder="••••••••"
+                            style={styles.input}
+                            required
+                        />
+                    </div>
 
-                        <button
-                            type="submit"
-                            disabled={loading}
-                            style={{
-                                ...styles.submitButton,
-                                opacity: loading ? 0.7 : 1
-                            }}
-                        >
-                            {loading ? "Création..." : "S'inscrire"}
-                        </button>
-                    </form>
+                    <button
+                        type="submit"
+                        disabled={loading}
+                        style={{
+                            ...styles.submitButton,
+                            opacity: loading ? 0.7 : 1
+                        }}
+                    >
+                        {loading ? "Création..." : "S'inscrire"}
+                    </button>
+                </form>
 
-                    {error && (
-                        <p style={{ color: "#DC2626", fontSize: "13px", textAlign: "center", marginTop: "15px" }}>
-                            {error}
-                        </p>
-                    )}
-                </div>
-
-                <Link to="/login" style={styles.footerLink}>
-                    Vous avez déjà un compte ? <span style={{ fontWeight: "bold", textDecoration: "underline" }}>Connectez-vous</span>
-                </Link>
+                {error && (
+                    <p style={{color: "#DC2626", fontSize: "13px", textAlign: "center", marginTop: "15px"}}>
+                        {error}
+                    </p>
+                )}
             </div>
-            );
+
+            <Link to="/login" style={styles.footerLink}>
+                Vous avez déjà un compte ? <span
+                style={{fontWeight: "bold", textDecoration: "underline"}}>Connectez-vous</span>
+            </Link>
+        </div>
+    );
 }

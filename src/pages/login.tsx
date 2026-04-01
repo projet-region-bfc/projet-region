@@ -195,7 +195,7 @@ export function Login() {
               </svg>
               <input 
                 type="email" 
-                placeholder="prenom.nom@bourgognefranchecomte."
+                placeholder="prenom.nom@bourgognefranchecomte"
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 style={styles.input} 

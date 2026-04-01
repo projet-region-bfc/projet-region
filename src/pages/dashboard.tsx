@@ -23,7 +23,7 @@ export function Dashboard() {
                 setLoading(true);
                 const [profileData, statsData] = await Promise.all([
                     getProfileByUserId(session.user.id),
-                    getThemeStats(session.user.id),
+                    getThemeStats(session.user.id, 'ASC'),
                 ]);
 
                 setProfile(profileData);
