@@ -6,7 +6,7 @@ export interface UserProfile {
 }
 
 export const getProfileByUserId = async (userId: string) => {
-    const { data, error } = await supabase
+    const {data, error} = await supabase
         .from('profile')
         .select('name, last_name')
         .eq('uid', userId)
