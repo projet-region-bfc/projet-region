@@ -55,13 +55,14 @@ export const getFullQuestionnaire = async (role: 'manager' | 'agent'): Promise<R
     return (data as unknown as RawThemeData[]) || [];
 };
 
-export const getThemeName = async (userId: string) : Promise<ThemeStat[]> => {
-    const query = supabase
+export const getThemeStatsByRole = async (userId: string, role: string) : Promise<ThemeStat[]> => {
+    const normalizedRole = role.toLowerCase();
+
+    const { data, error } = await supabase
         .from('theme_stats_view')
         .select('theme, moyenne_perso, moyenne_equipe')
         .eq('profile_id', userId)
-
-    const { data, error } = await query;
+        .eq('target_role', normalizedRole);
 
     if (error) throw error;
     console.log(data)
