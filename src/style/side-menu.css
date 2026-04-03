@@ -49,3 +49,26 @@
 .nav-item:hover {
   background-color: rgba(255, 255, 255, 0.1);
 }
+
+.nav-item-button {
+  background: none;
+  border: none;
+  font-family: inherit;
+  width: 100%;
+  text-align: left; 
+  color: white; 
+  padding: 12px 15px;
+  border-radius: 8px;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, opacity 0.2s ease;
+  margin-top: 20px; 
+}
+
+.nav-item-button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.nav-item-button:active {
+  opacity: 0.7;
+}

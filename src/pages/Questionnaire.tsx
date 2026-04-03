@@ -60,22 +60,22 @@ export function Questionnaire() {
     };
 
     return (
-        <div>
-            <h1>Questionnaire</h1>
+        <div className="q-container">
+            <h1 className="question-main-title">Questionnaire</h1>
 
-            <p>Question {index + 1} / {listeEtapes.length}</p>
-            <progress value={index + 1} max={listeEtapes.length}></progress>
+            <p className="question-progress-text">Question {index + 1} / {listeEtapes.length}</p>
+            <progress className="q-progress-bar" value={index + 1} max={listeEtapes.length}></progress>
 
-            <div>
-                <p><strong>Thème :</strong> {etapeCourante.nomTheme}</p>
-                <h2>{etapeCourante.nomCategorie}</h2>
+            <div className="question-card">
+                <p className="question-theme-badge"><strong>Thème :</strong> {etapeCourante.nomTheme}</p>
+                <h2 className="question-title">{etapeCourante.nomCategorie}</h2>
 
-                <div>
+                <div className="question-options-list">
                     {etapeCourante.options.map((opt) => (
                         <button
                             key={opt.uid}
                             onClick={() => selectionner(opt.uid)}
-                            style={{display: 'block', margin: '5px 0'}}
+                            className={`question-option-btn ${dejaRepondu === opt.uid ? "selected" : ""}`}
                         >
                             {dejaRepondu === opt.uid ? "✅ " : ""}{opt.reponse_text}
                         </button>
@@ -83,18 +83,18 @@ export function Questionnaire() {
                 </div>
             </div>
 
-            <div>
+            <div className="question-actions-container">
                 {index < listeEtapes.length - 1 ? (
-                    <button onClick={() => setIndex(index + 1)} disabled={!dejaRepondu}>
+                    <button className="question-btn-primaire" onClick={() => setIndex(index + 1)} disabled={!dejaRepondu}>
                         Suivant
                     </button>
                 ) : (
-                    <button onClick={() => alert("Fini !")} disabled={!dejaRepondu}>
+                    <button className="question-btn-primaire" onClick={() => alert("Fini !")} disabled={!dejaRepondu}>
                         Terminer
                     </button>
                 )}
 
-                <button onClick={() => setIndex(0)}>Recommencer</button>
+                <button className="question-btn-secondaire" onClick={() => setIndex(0)}>Recommencer</button>
             </div>
         </div>
     );
