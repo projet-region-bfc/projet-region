@@ -62,11 +62,11 @@ export function Questionnaire() {
     console.log(reponsesChoisies)
 
     return (
-        <div className="q-container">
+        <div className="question-container">
             <h1 className="question-main-title">Questionnaire</h1>
 
             <p className="question-progress-text">Question {index + 1} / {listeEtapes.length}</p>
-            <progress className="q-progress-bar" value={index + 1} max={listeEtapes.length}></progress>
+            <progress className="question-progress-bar" value={index + 1} max={listeEtapes.length}></progress>
 
             <div className="question-card">
                 <p className="question-theme-badge"><strong>Thème :</strong> {etapeCourante.nomTheme}</p>
