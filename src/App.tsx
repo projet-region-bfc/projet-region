@@ -40,14 +40,22 @@ const LayoutAvecMenu = () => {
 
 const HomeWrapper = () => {
 
-  const { session } = UserAuth(); 
+  const { session } = UserAuth();
+
+  const handleLogout = () => {
+      console.log("Logout");
+  }
 
     if (session) {
         return (
             <div className="app-container" style={{ display: 'flex', minHeight: '100vh' }}>
                 <Menu />
                 <main className="main-content" style={{ flexGrow: 1, display: 'flex', flexDirection: 'column', padding: '0px' }}>
+                    <Header userName="Test" onLogout={handleLogout} />
+
+                    <div style={{ padding: '20px', flexGrow: 1 }}>
                     <Home />
+                    </div>
                 </main>
             </div>
         );
