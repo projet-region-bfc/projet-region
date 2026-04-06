@@ -11,6 +11,7 @@ import {UserAuth} from "./context/AuthContext.tsx";
 import {useState} from "react";
 import Header from '../src/composants/header.tsx';
 import './style/page.css';
+import './header.css';
 
 
 const LayoutAvecMenu = () => {
@@ -45,7 +46,7 @@ const HomeWrapper = () => {
         return (
             <div className="app-container" style={{ display: 'flex', minHeight: '100vh' }}>
                 <Menu />
-                <main className="main-content" style={{ flexGrow: 1, padding: '20px' }}>
+                <main className="main-content" style={{ flexGrow: 1, display: 'flex', flexDirection: 'column', padding: '0px' }}>
                     <Home />
                 </main>
             </div>
