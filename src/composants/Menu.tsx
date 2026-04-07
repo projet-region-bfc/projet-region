@@ -1,6 +1,7 @@
 import {Link} from 'react-router-dom';
 import '../style/side-menu.css';
 import {UserAuth} from "../context/AuthContext.tsx";
+import logoImg from "../assets/logo.png";
 import * as React from "react";
 
 export function Menu() {
@@ -8,8 +9,10 @@ export function Menu() {
     return (
         <aside className="side-menu">
             <div className="logo-container">
+                <img src={logoImg} alt="Logo" />
                 <h2>Indice de la maturité des équipes et du management </h2>
             </div>
+            <div className='trait' />
 
             <nav className="nav-menu">
                 <Link to="/dashboard" className="nav-item active">
