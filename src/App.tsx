@@ -1,4 +1,5 @@
 import {BrowserRouter, Routes, Route} from "react-router-dom";
+import { ResultatChart } from "./pages/Resultat.tsx";
 // import './App.css'
 import {Home} from "./pages/home.tsx";
 import {Login} from "./pages/login.tsx";
@@ -11,6 +12,9 @@ import {UserAuth} from "./context/AuthContext.tsx";
 import Header from '../src/composants/header.tsx';
 import './style/page.css';
 import './header.css';
+import { DashboardManager } from "./pages/DashboardManager.tsx";
+import { DashboardAgent } from "./pages/DashboardAgent.tsx";
+
 
 
 const LayoutAvecMenu = () => {
@@ -65,6 +69,9 @@ function App() {
                         <Route path="/dashboard" element={<Dashboard/>}/>
                         <Route path="/questionnaire" element={<Questionnaire/>}/>
                     </Route>
+                    <Route path="/resultat" element={<ResultatChart data={[]} nomEquipe="Test" />}/>
+                    <Route path="/DashboardManager" element={<DashboardManager/>}/>
+                    <Route path="/DashboardAgent" element={<DashboardAgent />}/>
                 </Routes>
             </BrowserRouter>
         </div>
