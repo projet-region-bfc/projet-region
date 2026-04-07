@@ -7,6 +7,8 @@ import {getTotalPoints, type TotalPoints} from "../services/questionnaire_sessio
 import '../style/side-menu.css';
 import * as React from "react";
 import "../style/dashboard.css"
+import {ResultatChart} from "./Resultat.tsx";
+import {supabase} from "../supabaseClient.tsx";
 
 export function Dashboard() {
     const {session, signOut, setSelectedRole} = UserAuth();
@@ -15,15 +17,44 @@ export function Dashboard() {
     const [profile, setProfile] = useState<UserProfile | null>(null);
     const [worstThemes, setWorstThemes] = useState<ThemeStat[]>([]);
     const [totalPoints, setTotalPoints] = useState<TotalPoints | null>(null);
-    const [role, setRole] = useState<string>("Agent");
+    const [role, setRole] = useState<string>("agent"); // J'ai mis "agent" en minuscule pour correspondre à tes boutons
     const [loading, setLoading] = useState(true);
     const [allThemes, setAllThemes] = useState<ThemeStat[]>([]);
-    const handleMode = (role: string) => {
-        setSelectedRole(role);
+
+    const user = session?.user;
+
+    const [teams, setTeams] = useState<{ uid: string; nom_equipe: string }[]>([]);
+    const [selectedTeamId, setSelectedTeamId] = useState<string>("");
+
+    const handleMode = (nouveauRole: string) => {
+        setSelectedRole(nouveauRole);
+        setRole(nouveauRole);
     };
 
-    console.log(session);
+    // 1. Charger les équipes (dynamique selon Agent ou Manager)
+    useEffect(() => {
+        const fetchTeams = async () => {
+            if (!user?.id) return;
 
+            if (role === 'manager') {
+                const { data } = await supabase.from('team').select('uid, nom_equipe').eq('manager_id', user.id);
+                if (data && data.length > 0) {
+                    setTeams(data);
+                    setSelectedTeamId(data[0].uid);
+                }
+            } else {
+                const { data } = await supabase.from('team_members').select('team_id, team:team_id (uid, nom_equipe)').eq('profile_uid', user.id);
+                if (data && data.length > 0) {
+                    const extractedTeams = data.map((d: any) => Array.isArray(d.team) ? d.team[0] : d.team).filter(Boolean);
+                    setTeams(extractedTeams);
+                    if(extractedTeams.length > 0) setSelectedTeamId(extractedTeams[0].uid);
+                }
+            }
+        };
+        fetchTeams();
+    }, [user, role]);
+
+    // 2. Charger les stats globales (utilisées pour le TABLEAU ET LE GRAPHIQUE)
     useEffect(() => {
         if (session === null) {
             setLoading(false);
@@ -34,6 +65,7 @@ export function Dashboard() {
         (async () => {
             try {
                 setLoading(true);
+                // On récupère les stats via ton service
                 const statsData = await getThemeStatsByRole(session.user.id, role);
                 setAllThemes(statsData);
 
@@ -57,15 +89,8 @@ export function Dashboard() {
         })();
     }, [session, role]);
 
-    console.log(allThemes.length);
-    console.log(role);
-
-    if (session === undefined) {
-        return <p>Vérification de l'authentification...</p>;
-    }
-    if (session === null) {
-        return <p>Accès refusé, veuillez vous connecter.</p>;
-    }
+    if (session === undefined) return <p>Vérification de l'authentification...</p>;
+    if (session === null) return <p>Accès refusé, veuillez vous connecter.</p>;
     if (loading) return <p>Chargement de vos statistiques...</p>;
 
     const handleSignOut = async (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -74,29 +99,46 @@ export function Dashboard() {
         navigate("/");
     };
 
+    // LA CORRECTION EST ICI : On traduit "allThemes" (du tableau) dans le langage du graphique
+    const statsForChart = allThemes.map(el => ({
+        indicateur: el.theme,
+        scoreIndividuel: el.moyenne_perso,
+        scoreEquipe: el.moyenne_equipe
+    }));
+
     return (
         <div className="dash-content">
             <div className="title-container">
-            <h1>Dashboard</h1>
+                <h1>Dashboard</h1>
             </div>
+
             <div className="user-container">
-            <p>Points total : {totalPoints?.total_points ?? 0}</p>
-            <h2>Bienvenue {session?.user?.email}</h2>
-            <p>{profile?.name} {profile?.last_name}</p>
+                <p>Points total : {totalPoints?.total_points ?? 0}</p>
+                <h2>Bienvenue {session?.user?.email}</h2>
+                <p>{profile?.name} {profile?.last_name}</p>
             </div>
+
+            {/* Le graphique utilise maintenant les MEMES données que le tableau */}
+            <div>
+                <ResultatChart
+                    data={statsForChart}
+                    nomEquipe={teams.find(t => t.uid === selectedTeamId)?.nom_equipe || "Mon Équipe"}
+                />
+            </div>
+
             <div className="toImprove-container">
-            <h3>Thèmes à améliorer (Top 3 pires notes) :</h3>
-            {worstThemes.length > 0 ? (
-                <ul>
-                    {worstThemes.map((el: any, index: number) => (
-                        <li key={index}>
-                            <strong>{el.theme}</strong> : {el.moyenne_perso} / 5
-                        </li>
-                    ))}
-                </ul>
-            ) : (
-                <p>Aucune donnée du questionnaire pour le moment.</p>
-            )}
+                <h3>Thèmes à améliorer (Top 3 pires notes) :</h3>
+                {worstThemes.length > 0 ? (
+                    <ul>
+                        {worstThemes.map((el: any, index: number) => (
+                            <li key={index}>
+                                <strong>{el.theme}</strong> : {el.moyenne_perso} / 4
+                            </li>
+                        ))}
+                    </ul>
+                ) : (
+                    <p>Aucune donnée du questionnaire pour le moment.</p>
+                )}
             </div>
 
             <div className="table-container">
@@ -106,20 +148,19 @@ export function Dashboard() {
                         <div className="cellule">Mes points</div>
                         <div className="cellule">Points de mon équipe</div>
                     </li>
-                    {
-                        allThemes.map((el) => (
-                            <li className="Points-Rangée" key={el.theme}>
-                                <div className="cellule">{el.theme}</div>
-                                <div className="cellule">{el.moyenne_perso}</div>
-                                <div className="cellule">{el.moyenne_equipe}</div>
-                            </li>
-                        ))
-                    }
+                    {allThemes.map((el) => (
+                        <li className="Points-Rangée" key={el.theme}>
+                            <div className="cellule">{el.theme}</div>
+                            <div className="cellule">{el.moyenne_perso}</div>
+                            <div className="cellule">{el.moyenne_equipe}</div>
+                        </li>
+                    ))}
                 </ul>
             </div>
 
             <div className="role-selection">
-            <h3>Rôle actuel : {role}</h3>
+                <h3>Rôle actuel : {role.charAt(0).toUpperCase() + role.slice(1)}</h3>
+
                 {profile?.user_role === 'manager' && (
                     <button onClick={() => handleMode("manager")}>Mode Manager</button>
                 )}
@@ -130,12 +171,13 @@ export function Dashboard() {
 
                 {profile?.user_role === 'manager et agent' && (
                     <>
-                        <button onClick={() => handleMode("manager")}>Mode Manager</button>
-                        <button onClick={() => handleMode("agent")}>Mode Agent</button>
+                        <button onClick={() => handleMode("manager")} style={{ fontWeight: role === "manager" ? "bold" : "normal" }}>Mode Manager</button>
+                        <button onClick={() => handleMode("agent")} style={{ fontWeight: role === "agent" ? "bold" : "normal" }}>Mode Agent</button>
                     </>
                 )}
-            <Link to="/questionnaire">Lancer le questionnaire</Link>
-            <button onClick={handleSignOut}>Se déconnecter</button>
+
+                <Link to="/questionnaire">Lancer le questionnaire</Link>
+                <button onClick={handleSignOut}>Se déconnecter</button>
             </div>
         </div>
     )

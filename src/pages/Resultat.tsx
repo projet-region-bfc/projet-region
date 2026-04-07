@@ -42,16 +42,16 @@ export const ResultatChart = ({ data, nomEquipe }: ResultatChartProps) => {
                         <Radar
                             name="Moyenne de l'équipe"
                             dataKey="scoreEquipe"
-                            stroke="#8884d8"
-                            fill="#8884d8"
+                            stroke="#gray"
+                            fill="#gray"
                             fillOpacity={0.6}
                         />
 
                         <Radar
                             name="Mon score"
                             dataKey="scoreIndividuel"
-                            stroke="#82ca9d"
-                            fill="#82ca9d"
+                            stroke="#117D88"
+                            fill="#117D88"
                             fillOpacity={0.5}
                         />
 
