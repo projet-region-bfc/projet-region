@@ -2,7 +2,7 @@ import {UserAuth} from "../context/AuthContext.tsx";
 import {Link, useNavigate} from "react-router-dom";
 import {useEffect, useState} from "react";
 import {getProfileByUserId, type UserProfile} from "../services/profileService.tsx";
-import {getThemeName, getThemeStats, type ThemeName, type ThemeStat} from "../services/themeService.tsx";
+import {getThemeStatsByRole, type ThemeStat} from "../services/themeService.tsx";
 import {getTotalPoints, type TotalPoints} from "../services/questionnaire_sessionsService.tsx";
 import '../style/side-menu.css';
 import * as React from "react";
@@ -31,23 +31,28 @@ export function Dashboard() {
         (async () => {
             try {
                 setLoading(true);
-                const [profileData, statsData, pointsData, themesData] = await Promise.all([
+                const statsData = await getThemeStatsByRole(session.user.id, role);
+                setAllThemes(statsData);
+
+                const sortedWorst = [...statsData]
+                    .sort((a, b) => a.moyenne_perso - b.moyenne_perso)
+                    .slice(0, 3);
+                setWorstThemes(sortedWorst);
+
+                const [profileData, pointsData] = await Promise.all([
                     getProfileByUserId(session.user.id),
-                    getThemeStats(session.user.id, 'DESC'),
-                    getTotalPoints(session.user.id),
-                    getThemeName(session.user.id),
+                    getTotalPoints(session.user.id, role),
                 ]);
+
                 setProfile(profileData);
-                setWorstThemes(statsData);
                 setTotalPoints(pointsData);
-                setAllThemes(themesData);
             } catch (err) {
-                console.error("Erreur chargement dashboard:", err);
+                console.error("Erreur:", err);
             } finally {
                 setLoading(false);
             }
         })();
-    }, [session]);
+    }, [session, role]);
 
     console.log(allThemes.length);
     console.log(role);
@@ -112,8 +117,20 @@ export function Dashboard() {
 
             <div className="role-selection">
             <h3>Rôle actuel : {role}</h3>
-            <button onClick={() => setRole("Manager")}>Manager</button>
-            <button onClick={() => setRole("Agent")}>Agent</button>
+                {profile?.user_role === 'manager' && (
+                    <button onClick={() => setRole("Manager")}>Interface Manager</button>
+                )}
+
+                {profile?.user_role === 'agent' && (
+                    <button onClick={() => setRole("Agent")}>Interface Agent</button>
+                )}
+
+                {profile?.user_role === 'manager et agent' && (
+                    <>
+                        <button onClick={() => setRole("Manager")}>Manager</button>
+                        <button onClick={() => setRole("Agent")}>Agent</button>
+                    </>
+                )}
             <Link to="/questionnaire">Lancer le questionnaire</Link>
             <button onClick={handleSignOut}>Se déconnecter</button>
             </div>
