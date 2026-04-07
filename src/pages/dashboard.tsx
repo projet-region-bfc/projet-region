@@ -51,7 +51,7 @@ export function Dashboard() {
         fetchTeams();
     }, [user, selectedRole]);
 
-    // 2. Charger les stats globales (utilisées pour le TABLEAU ET LE GRAPHIQUE)
+    // 2. Charger les stats
     useEffect(() => {
         if (session === null) {
             setLoading(false);
@@ -101,8 +101,7 @@ export function Dashboard() {
         await signOut();
         navigate("/");
     };
-
-    // LA CORRECTION EST ICI : On traduit "allThemes" (du tableau) dans le langage du graphique
+    
     const statsForChart = allThemes.map(el => ({
         indicateur: el.theme,
         scoreIndividuel: el.moyenne_perso,
@@ -120,7 +119,6 @@ export function Dashboard() {
                 <p>{profile?.name} {profile?.last_name}</p>
             </div>
 
-            {/* Le graphique utilise maintenant les MEMES données que le tableau */}
             <div>
                 <ResultatChart
                     data={statsForChart}
