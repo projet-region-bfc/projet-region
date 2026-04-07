@@ -147,7 +147,7 @@ export function Signup() {
             <div style={styles.header}>
                 <div style={styles.logoContainer}>
                     <img src={logoImg} alt="Logo" style={styles.logoImg}/>
-                    <h1 style={styles.logoText}>La région</h1>
+                    <h1 style={styles.logoText}>Indice de la maturité des équipes et du management</h1>
                 </div>
                 <br/>
                 <p style={{fontSize: "16px", margin: 0, opacity: 0.9, color: "white"}}>

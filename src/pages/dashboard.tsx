@@ -77,7 +77,7 @@ export function Dashboard() {
     return (
         <div className="dash-content">
             <div className="title-container">
-            <h1>Dashboard</h1>
+            <h1>Résultats</h1>
             </div>
             <div className="user-container">
             <p>Points total : {totalPoints?.total_points ?? 0}</p>
@@ -85,7 +85,7 @@ export function Dashboard() {
             <p>{profile?.name} {profile?.last_name}</p>
             </div>
             <div className="toImprove-container">
-            <h3>Thèmes à améliorer (Top 3 pires notes) :</h3>
+            <h3>Thèmes à améliorer (Top 3 scores les plus bas) :</h3>
             {worstThemes.length > 0 ? (
                 <ul>
                     {worstThemes.map((el: any, index: number) => (
@@ -103,8 +103,8 @@ export function Dashboard() {
                 <ul className="custom-table">
                     <li className="custom-table-header">
                         <div className="cellule">Thèmes</div>
-                        <div className="cellule">Mes points</div>
-                        <div className="cellule">Points de mon équipe</div>
+                        <div className="cellule">Mon score</div>
+                        <div className="cellule">Score de mon équipe</div>
                     </li>
                     {
                         allThemes.map((el) => (
