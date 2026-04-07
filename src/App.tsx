@@ -25,7 +25,6 @@ const LayoutAvecMenu = () => {
             <main className="main-content" style={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
 
                 <Header
-                    userName="Test"
                     onLogout={handleLogout}
                 />
 
