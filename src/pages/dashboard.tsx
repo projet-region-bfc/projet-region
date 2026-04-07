@@ -11,32 +11,29 @@ import {ResultatChart} from "./Resultat.tsx";
 import {supabase} from "../supabaseClient.tsx";
 
 export function Dashboard() {
-    const {session, signOut, setSelectedRole} = UserAuth();
+    const {session, signOut, setSelectedRole, selectedRole} = UserAuth();
     const navigate = useNavigate();
 
     const [profile, setProfile] = useState<UserProfile | null>(null);
     const [worstThemes, setWorstThemes] = useState<ThemeStat[]>([]);
     const [totalPoints, setTotalPoints] = useState<TotalPoints | null>(null);
-    const [role, setRole] = useState<string>("agent"); // J'ai mis "agent" en minuscule pour correspondre à tes boutons
     const [loading, setLoading] = useState(true);
     const [allThemes, setAllThemes] = useState<ThemeStat[]>([]);
+    const handleMode = (role: string) => {
+        setSelectedRole(role);
+    };
 
     const user = session?.user;
 
     const [teams, setTeams] = useState<{ uid: string; nom_equipe: string }[]>([]);
     const [selectedTeamId, setSelectedTeamId] = useState<string>("");
 
-    const handleMode = (nouveauRole: string) => {
-        setSelectedRole(nouveauRole);
-        setRole(nouveauRole);
-    };
-
     // 1. Charger les équipes (dynamique selon Agent ou Manager)
     useEffect(() => {
         const fetchTeams = async () => {
             if (!user?.id) return;
 
-            if (role === 'manager') {
+            if (selectedRole === 'manager') {
                 const { data } = await supabase.from('team').select('uid, nom_equipe').eq('manager_id', user.id);
                 if (data && data.length > 0) {
                     setTeams(data);
@@ -52,7 +49,7 @@ export function Dashboard() {
             }
         };
         fetchTeams();
-    }, [user, role]);
+    }, [user, selectedRole]);
 
     // 2. Charger les stats globales (utilisées pour le TABLEAU ET LE GRAPHIQUE)
     useEffect(() => {
@@ -65,8 +62,7 @@ export function Dashboard() {
         (async () => {
             try {
                 setLoading(true);
-                // On récupère les stats via ton service
-                const statsData = await getThemeStatsByRole(session.user.id, role);
+                const statsData = await getThemeStatsByRole(session.user.id, selectedRole);
                 setAllThemes(statsData);
 
                 const sortedWorst = [...statsData]
@@ -76,7 +72,7 @@ export function Dashboard() {
 
                 const [profileData, pointsData] = await Promise.all([
                     getProfileByUserId(session.user.id),
-                    getTotalPoints(session.user.id, role),
+                    getTotalPoints(session.user.id, selectedRole),
                 ]);
 
                 setProfile(profileData);
@@ -87,10 +83,17 @@ export function Dashboard() {
                 setLoading(false);
             }
         })();
-    }, [session, role]);
+    }, [session, selectedRole]);
 
-    if (session === undefined) return <p>Vérification de l'authentification...</p>;
-    if (session === null) return <p>Accès refusé, veuillez vous connecter.</p>;
+    console.log(allThemes.length);
+    console.log(selectedRole);
+
+    if (session === undefined) {
+        return <p>Vérification de l'authentification...</p>;
+    }
+    if (session === null) {
+        return <p>Accès refusé, veuillez vous connecter.</p>;
+    }
     if (loading) return <p>Chargement de vos statistiques...</p>;
 
     const handleSignOut = async (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -111,7 +114,6 @@ export function Dashboard() {
             <div className="title-container">
                 <h1>Dashboard</h1>
             </div>
-
             <div className="user-container">
                 <p>Points total : {totalPoints?.total_points ?? 0}</p>
                 <h2>Bienvenue {session?.user?.email}</h2>
@@ -159,8 +161,7 @@ export function Dashboard() {
             </div>
 
             <div className="role-selection">
-                <h3>Rôle actuel : {role.charAt(0).toUpperCase() + role.slice(1)}</h3>
-
+                <h3>Rôle actuel : {selectedRole}</h3>
                 {profile?.user_role === 'manager' && (
                     <button onClick={() => handleMode("manager")}>Mode Manager</button>
                 )}
@@ -171,11 +172,10 @@ export function Dashboard() {
 
                 {profile?.user_role === 'manager et agent' && (
                     <>
-                        <button onClick={() => handleMode("manager")} style={{ fontWeight: role === "manager" ? "bold" : "normal" }}>Mode Manager</button>
-                        <button onClick={() => handleMode("agent")} style={{ fontWeight: role === "agent" ? "bold" : "normal" }}>Mode Agent</button>
+                        <button onClick={() => handleMode("manager")}>Mode Manager</button>
+                        <button onClick={() => handleMode("agent")}>Mode Agent</button>
                     </>
                 )}
-
                 <Link to="/questionnaire">Lancer le questionnaire</Link>
                 <button onClick={handleSignOut}>Se déconnecter</button>
             </div>
