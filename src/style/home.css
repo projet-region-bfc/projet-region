@@ -1,0 +1,92 @@
+
+.home-container {
+  max-width: 900px;
+  margin: 80px auto; 
+  font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+  text-align: center; 
+  display: flex;
+  flex-direction: column;
+  gap: 50px;
+}
+
+.home-container h1 {
+  font-size: 46px;
+  font-weight: 800;
+  color: #117D88; 
+  letter-spacing: -1px;
+  margin: 0;
+}
+
+.home-nav {
+  display: flex;
+  justify-content: center;
+}
+
+.home-nav ul {
+  list-style: none;
+  padding: 8px;
+  margin: 0;
+  display: inline-flex;
+  background: white;
+  border-radius: 50px; 
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.06); 
+  gap: 5px;
+}
+
+.home-nav a {
+  text-decoration: none;
+  color: #555;
+  font-weight: 600;
+  font-size: 14px;
+  padding: 12px 24px;
+  border-radius: 30px;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.home-nav a:hover {
+  background-color: #117D88;
+  color: white;
+}
+
+.home-auth-section {
+  display: flex;
+  justify-content: center;
+}
+
+.home-auth-content {
+  background: white;
+  padding: 40px 50px;
+  border-radius: 24px; 
+  box-shadow: 0 10px 40px rgba(17, 125, 136, 0.08); 
+  max-width: 500px;
+  width: 100%;
+}
+
+.home-auth-content p {
+  font-size: 18px;
+  color: #666;
+  margin: 0 0 35px 0;
+  line-height: 1.5;
+}
+
+.home-auth-content strong {
+  display: block; 
+  color: #111;
+  font-size: 22px;
+  margin-top: 10px;
+}
+
+.home-auth-button {
+  padding: 16px 36px;
+  border-radius: 50px; 
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  border: none;
+  background-color: #117D88;
+  color: white;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(17, 125, 136, 0.3); 
+}

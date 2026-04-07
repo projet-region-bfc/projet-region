@@ -6,7 +6,7 @@ import {getThemeStatsByRole, type ThemeStat} from "../services/themeService.tsx"
 import {getTotalPoints, type TotalPoints} from "../services/questionnaire_sessionsService.tsx";
 import '../style/side-menu.css';
 import * as React from "react";
-import "../pages/dashboard.css"
+import "../style/dashboard.css"
 
 export function Dashboard() {
     const {session, signOut} = UserAuth();
@@ -72,11 +72,16 @@ export function Dashboard() {
     };
 
     return (
-        <div>
+        <div className="dash-content">
+            <div className="title-container">
             <h1>Dashboard</h1>
+            </div>
+            <div className="user-container">
             <p>Points total : {totalPoints?.total_points ?? 0}</p>
             <h2>Bienvenue {session?.user?.email}</h2>
             <p>{profile?.name} {profile?.last_name}</p>
+            </div>
+            <div className="toImprove-container">
             <h3>Thèmes à améliorer (Top 3 pires notes) :</h3>
             {worstThemes.length > 0 ? (
                 <ul>
@@ -89,6 +94,7 @@ export function Dashboard() {
             ) : (
                 <p>Aucune donnée du questionnaire pour le moment.</p>
             )}
+            </div>
 
             <div className="table-container">
                 <ul className="custom-table">
@@ -109,11 +115,13 @@ export function Dashboard() {
                 </ul>
             </div>
 
-
+            <div className="role-selection">
+            <h3>Rôle actuel : {role}</h3>
             <button onClick={() => setRole("Manager")}>Manager</button>
             <button onClick={() => setRole("Agent")}>Agent</button>
             <Link to="/questionnaire">Lancer le questionnaire</Link>
             <button onClick={handleSignOut}>Se déconnecter</button>
+            </div>
         </div>
     )
 }
