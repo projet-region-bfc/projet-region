@@ -2,17 +2,21 @@ import '../header.css';
 import {useEffect, useState} from "react";
 import {getProfileByUserId, type UserProfile} from "../services/profileService.tsx";
 import {UserAuth} from "../context/AuthContext.tsx";
+import {useNavigate} from "react-router-dom";
 
 
-interface HeaderProps {
-    onLogout?: () => void;
-}
-
-export default function Header({ onLogout }: HeaderProps) {
+export default function Header() {
 
     const [profile, setProfile] = useState<UserProfile | null>(null);
     const [loading, setLoading] = useState(true);
     const {session} = UserAuth();
+    const {signOut} = UserAuth()
+    const navigate = useNavigate();
+
+    const test = async () => {
+        await signOut();
+        navigate("/login");
+    }
 
 
     useEffect(() => {
@@ -57,7 +61,7 @@ export default function Header({ onLogout }: HeaderProps) {
                 <span className="user-name">{profile?.name} {profile?.last_name}</span>
             </div>
 
-            <button className="logout-btn" onClick={onLogout}>
+            <button className="logout-btn" onClick={test}>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
                      className="icon">
                     <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
