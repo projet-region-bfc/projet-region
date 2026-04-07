@@ -7,8 +7,6 @@ import { Dashboard } from "./pages/dashboard.tsx";
 import { Questionnaire } from "./pages/Questionnaire.tsx";
 import { Formation } from './pages/Formation.tsx';
 import { ResultatChart } from "./pages/Resultat.tsx";
-import { DashboardManager } from "./pages/DashboardManager.tsx";
-import { DashboardAgent } from "./pages/DashboardAgent.tsx";
 
 // Composants
 import { Menu } from "./composants/Menu.tsx";
@@ -21,6 +19,8 @@ import { UserAuth } from "./context/AuthContext.tsx";
 // Styles
 import './style/page.css';
 import './header.css';
+
+
 
 const LayoutAvecMenu = () => {
     return (
@@ -52,15 +52,12 @@ function App() {
                     <Route element={<ProtectedRoute />}>
                         <Route element={<LayoutAvecMenu />}>
                             <Route path="/" element={<Navigate to="/dashboard" replace />} />
-                            <Route path="/dashboard" element={<Dashboard />} />
-                            <Route path="/questionnaire" element={<Questionnaire />} />
-                            <Route path="/formation" element={<Formation />} />
-                            <Route path="/resultat" element={<ResultatChart data={[]} nomEquipe="Test" />} />
-                            <Route path="/DashboardManager" element={<DashboardManager />} />
-                            <Route path="/DashboardAgent" element={<DashboardAgent />} />
+                            <Route path="/dashboard" element={<Dashboard/>}/>
+                            <Route path="/questionnaire" element={<Questionnaire/>}/>
+                            <Route path="/formation" element={<Formation/>}/>
+                            <Route path="/resultat" element={<ResultatChart data={[]} nomEquipe="Test" />}/>
                         </Route>
                     </Route>
-
                 </Routes>
             </BrowserRouter>
         </div>
