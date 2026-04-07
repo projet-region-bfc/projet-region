@@ -1,3 +1,4 @@
+import { ResultatChart } from "./pages/Resultat.tsx";
 import {BrowserRouter, Routes, Route, Navigate} from "react-router-dom";
 // import './App.css'
 import {Login} from "./pages/login.tsx";
@@ -11,6 +12,8 @@ import Header from '../src/composants/header.tsx';
 import { ProtectedRoute } from "./composants/ProtectedRoute.tsx";
 import './style/page.css';
 import './header.css';
+import { DashboardManager } from "./pages/DashboardManager.tsx";
+import { DashboardAgent } from "./pages/DashboardAgent.tsx";
 
 
 
@@ -46,13 +49,16 @@ function App() {
                             <Route path="/" element={<Navigate to="/dashboard" replace />} />
                             <Route path="/dashboard" element={<Dashboard/>}/>
                             <Route path="/questionnaire" element={<Questionnaire/>}/>
-                         <Route path="/formation" element={<Formation/>}/>
+                            <Route path="/formation" element={<Formation/>}/>
+                            <Route path="/resultat" element={<ResultatChart data={[]} nomEquipe="Test" />}/>
+                            <Route path="/DashboardManager" element={<DashboardManager/>}/>
+                            <Route path="/DashboardAgent" element={<DashboardAgent />}/>
                         </Route>
                     </Route>
                 </Routes>
             </BrowserRouter>
         </div>
-    );
+    )
 }
 
 export default App;

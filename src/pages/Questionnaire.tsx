@@ -1,5 +1,6 @@
 import {useState, useEffect} from "react";
 import {getFullQuestionnaire} from "../services/themeService.tsx";
+import {UserAuth} from "../context/AuthContext.tsx";
 
 interface Etape {
     idCategorie: string;
@@ -13,6 +14,7 @@ interface Etape {
 }
 
 export function Questionnaire() {
+    const { selectedRole } = UserAuth();
     const [listeEtapes, setListeEtapes] = useState<Etape[]>([]);
     const [index, setIndex] = useState(0);
     const [reponsesChoisies, setReponsesChoisies] = useState<Record<string, string>>({});
@@ -21,7 +23,9 @@ export function Questionnaire() {
     useEffect(() => {
         (async () => {
             try {
-                const data = await getFullQuestionnaire('agent');
+                console.log("Le questionnaire se lance en mode : ", selectedRole);
+
+                const data = await getFullQuestionnaire(selectedRole);
 
                 const listeReponseTemp: Etape[] = [];
 
