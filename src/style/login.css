@@ -19,7 +19,6 @@
     color: var(--color-white);
 }
 
-/* Header & Logo */
 .login-header {
     text-align: center;
     margin-bottom: 40px;
@@ -29,7 +28,7 @@
     position: absolute;
     top: 30px;
     left: 30px;
-    width: 180px;
+    width: 200px;
     height: auto;
     object-fit: contain;
 }
@@ -47,7 +46,6 @@
     opacity: 0.9;
 }
 
-/* Card & Form */
 .login-card {
     background-color: var(--color-white);
     border-radius: 15px;
@@ -76,7 +74,6 @@
     font-weight: 600;
 }
 
-/* Input Styles */
 .input-wrapper {
     position: relative;
     display: flex;
@@ -113,7 +110,6 @@
     padding-left: 15px;
 }
 
-/* Button & Footer */
 .btn-submit {
     width: 70%;
     align-self: center;
