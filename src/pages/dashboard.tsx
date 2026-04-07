@@ -117,8 +117,20 @@ export function Dashboard() {
 
             <div className="role-selection">
             <h3>Rôle actuel : {role}</h3>
-            <button onClick={() => setRole("Manager")}>Manager</button>
-            <button onClick={() => setRole("Agent")}>Agent</button>
+                {profile?.user_role === 'manager' && (
+                    <button onClick={() => setRole("Manager")}>Interface Manager</button>
+                )}
+
+                {profile?.user_role === 'agent' && (
+                    <button onClick={() => setRole("Agent")}>Interface Agent</button>
+                )}
+
+                {profile?.user_role === 'manager et agent' && (
+                    <>
+                        <button onClick={() => setRole("Manager")}>Manager</button>
+                        <button onClick={() => setRole("Agent")}>Agent</button>
+                    </>
+                )}
             <Link to="/questionnaire">Lancer le questionnaire</Link>
             <button onClick={handleSignOut}>Se déconnecter</button>
             </div>
