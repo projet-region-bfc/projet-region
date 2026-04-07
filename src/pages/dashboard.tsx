@@ -9,18 +9,19 @@ import * as React from "react";
 import "../style/dashboard.css"
 
 export function Dashboard() {
-    const {session, signOut, setSelectedRole} = UserAuth();
+    const {session, signOut, setSelectedRole, selectedRole} = UserAuth();
     const navigate = useNavigate();
 
     const [profile, setProfile] = useState<UserProfile | null>(null);
     const [worstThemes, setWorstThemes] = useState<ThemeStat[]>([]);
     const [totalPoints, setTotalPoints] = useState<TotalPoints | null>(null);
-    const [role, setRole] = useState<string>("Agent");
     const [loading, setLoading] = useState(true);
     const [allThemes, setAllThemes] = useState<ThemeStat[]>([]);
     const handleMode = (role: string) => {
         setSelectedRole(role);
     };
+
+    console.log(selectedRole);
 
     console.log(session);
 
@@ -34,7 +35,7 @@ export function Dashboard() {
         (async () => {
             try {
                 setLoading(true);
-                const statsData = await getThemeStatsByRole(session.user.id, role);
+                const statsData = await getThemeStatsByRole(session.user.id, selectedRole);
                 setAllThemes(statsData);
 
                 const sortedWorst = [...statsData]
@@ -44,7 +45,7 @@ export function Dashboard() {
 
                 const [profileData, pointsData] = await Promise.all([
                     getProfileByUserId(session.user.id),
-                    getTotalPoints(session.user.id, role),
+                    getTotalPoints(session.user.id, selectedRole),
                 ]);
 
                 setProfile(profileData);
@@ -55,10 +56,10 @@ export function Dashboard() {
                 setLoading(false);
             }
         })();
-    }, [session, role]);
+    }, [session, selectedRole]);
 
     console.log(allThemes.length);
-    console.log(role);
+    console.log(selectedRole);
 
     if (session === undefined) {
         return <p>Vérification de l'authentification...</p>;
@@ -73,30 +74,30 @@ export function Dashboard() {
         await signOut();
         navigate("/");
     };
-
+    console.log("Rôle du profil reçu :", profile?.user_role);
     return (
         <div className="dash-content">
             <div className="title-container">
-            <h1>Dashboard</h1>
+                <h1>Dashboard</h1>
             </div>
             <div className="user-container">
-            <p>Points total : {totalPoints?.total_points ?? 0}</p>
-            <h2>Bienvenue {session?.user?.email}</h2>
-            <p>{profile?.name} {profile?.last_name}</p>
+                <p>Points total : {totalPoints?.total_points ?? 0}</p>
+                <h2>Bienvenue {session?.user?.email}</h2>
+                <p>{profile?.name} {profile?.last_name}</p>
             </div>
             <div className="toImprove-container">
-            <h3>Thèmes à améliorer (Top 3 pires notes) :</h3>
-            {worstThemes.length > 0 ? (
-                <ul>
-                    {worstThemes.map((el: any, index: number) => (
-                        <li key={index}>
-                            <strong>{el.theme}</strong> : {el.moyenne_perso} / 5
-                        </li>
-                    ))}
-                </ul>
-            ) : (
-                <p>Aucune donnée du questionnaire pour le moment.</p>
-            )}
+                <h3>Thèmes à améliorer (Top 3 pires notes) :</h3>
+                {worstThemes.length > 0 ? (
+                    <ul>
+                        {worstThemes.map((el: any, index: number) => (
+                            <li key={index}>
+                                <strong>{el.theme}</strong> : {el.moyenne_perso} / 5
+                            </li>
+                        ))}
+                    </ul>
+                ) : (
+                    <p>Aucune donnée du questionnaire pour le moment.</p>
+                )}
             </div>
 
             <div className="table-container">
@@ -119,7 +120,7 @@ export function Dashboard() {
             </div>
 
             <div className="role-selection">
-            <h3>Rôle actuel : {role}</h3>
+                <h3>Rôle actuel : {selectedRole}</h3>
                 {profile?.user_role === 'manager' && (
                     <button onClick={() => handleMode("manager")}>Mode Manager</button>
                 )}
@@ -134,8 +135,8 @@ export function Dashboard() {
                         <button onClick={() => handleMode("agent")}>Mode Agent</button>
                     </>
                 )}
-            <Link to="/questionnaire">Lancer le questionnaire</Link>
-            <button onClick={handleSignOut}>Se déconnecter</button>
+                <Link to="/questionnaire">Lancer le questionnaire</Link>
+                <button onClick={handleSignOut}>Se déconnecter</button>
             </div>
         </div>
     )
