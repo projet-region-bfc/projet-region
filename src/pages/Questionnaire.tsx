@@ -1,5 +1,6 @@
 import {useState, useEffect} from "react";
 import {getFullQuestionnaire} from "../services/themeService.tsx";
+import {UserAuth} from "../context/AuthContext.tsx";
 
 interface Etape {
     idCategorie: string;
@@ -13,6 +14,7 @@ interface Etape {
 }
 
 export function Questionnaire() {
+    const { selectedRole } = UserAuth();
     const [listeEtapes, setListeEtapes] = useState<Etape[]>([]);
     const [index, setIndex] = useState(0);
     const [reponsesChoisies, setReponsesChoisies] = useState<Record<string, string>>({});
@@ -21,7 +23,7 @@ export function Questionnaire() {
     useEffect(() => {
         (async () => {
             try {
-                const data = await getFullQuestionnaire('agent');
+                const data = await getFullQuestionnaire(selectedRole);
 
                 const listeReponseTemp: Etape[] = [];
 
@@ -63,7 +65,7 @@ export function Questionnaire() {
 
     return (
         <div className="question-container">
-            <h1 className="question-main-title">Questionnaire</h1>
+            <h1 className="question-main-title">Questionnaire : {selectedRole}</h1>
 
             <p className="question-progress-text">Question {index + 1} / {listeEtapes.length}</p>
             <progress className="question-progress-bar" value={index + 1} max={listeEtapes.length}></progress>

@@ -2,25 +2,56 @@ import {UserAuth} from "../context/AuthContext.tsx";
 import {Link, useNavigate} from "react-router-dom";
 import {useEffect, useState} from "react";
 import {getProfileByUserId, type UserProfile} from "../services/profileService.tsx";
-import {getThemeName, getThemeStats, type ThemeName, type ThemeStat} from "../services/themeService.tsx";
-import {getTotalPoints, type TotalPoints} from "../services/questionnaire_sessionsService.tsx";
+import {getThemeStatsByRole, type ThemeStat} from "../services/themeService.tsx";
+import {getQuestionnaireSession, getTotalPoints, type TotalPoints} from "../services/questionnaire_sessionsService.tsx";
 import '../style/side-menu.css';
 import * as React from "react";
-import "../pages/dashboard.css"
+import "../style/dashboard.css"
+import {ResultatChart} from "./Resultat.tsx";
+import {supabase} from "../supabaseClient.tsx";
 
 export function Dashboard() {
-    const {session, signOut} = UserAuth();
+    const {session, signOut, setSelectedRole, selectedRole, questionnaireFait} = UserAuth();
     const navigate = useNavigate();
 
     const [profile, setProfile] = useState<UserProfile | null>(null);
     const [worstThemes, setWorstThemes] = useState<ThemeStat[]>([]);
     const [totalPoints, setTotalPoints] = useState<TotalPoints | null>(null);
-    const [role, setRole] = useState<string>("Agent");
     const [loading, setLoading] = useState(true);
     const [allThemes, setAllThemes] = useState<ThemeStat[]>([]);
+    const handleMode = (role: string) => {
+        setSelectedRole(role);
+    };
 
-    console.log(session);
+    const user = session?.user;
 
+    const [teams, setTeams] = useState<{ uid: string; nom_equipe: string }[]>([]);
+    const [selectedTeamId, setSelectedTeamId] = useState<string>("");
+
+    // 1. Charger les équipes (dynamique selon Agent ou Manager)
+    useEffect(() => {
+        const fetchTeams = async () => {
+            if (!user?.id) return;
+
+            if (selectedRole === 'manager') {
+                const {data} = await supabase.from('team').select('uid, nom_equipe').eq('manager_id', user.id);
+                if (data && data.length > 0) {
+                    setTeams(data);
+                    setSelectedTeamId(data[0].uid);
+                }
+            } else {
+                const {data} = await supabase.from('team_members').select('team_id, team:team_id (uid, nom_equipe)').eq('profile_uid', user.id);
+                if (data && data.length > 0) {
+                    const extractedTeams = data.map((d: any) => Array.isArray(d.team) ? d.team[0] : d.team).filter(Boolean);
+                    setTeams(extractedTeams);
+                    if (extractedTeams.length > 0) setSelectedTeamId(extractedTeams[0].uid);
+                }
+            }
+        };
+        fetchTeams();
+    }, [user, selectedRole]);
+
+    // 2. Charger les stats
     useEffect(() => {
         if (session === null) {
             setLoading(false);
@@ -31,26 +62,31 @@ export function Dashboard() {
         (async () => {
             try {
                 setLoading(true);
-                const [profileData, statsData, pointsData, themesData] = await Promise.all([
+                const statsData = await getThemeStatsByRole(session.user.id, selectedRole);
+                setAllThemes(statsData);
+
+                const sortedWorst = [...statsData]
+                    .sort((a, b) => a.moyenne_perso - b.moyenne_perso)
+                    .slice(0, 3);
+                setWorstThemes(sortedWorst);
+
+                const [profileData, pointsData] = await Promise.all([
                     getProfileByUserId(session.user.id),
-                    getThemeStats(session.user.id, 'DESC'),
-                    getTotalPoints(session.user.id),
-                    getThemeName(session.user.id),
+                    getTotalPoints(session.user.id, selectedRole),
                 ]);
+
                 setProfile(profileData);
-                setWorstThemes(statsData);
                 setTotalPoints(pointsData);
-                setAllThemes(themesData);
             } catch (err) {
-                console.error("Erreur chargement dashboard:", err);
+                console.error("Erreur:", err);
             } finally {
                 setLoading(false);
             }
         })();
-    }, [session]);
+    }, [session, selectedRole]);
 
     console.log(allThemes.length);
-    console.log(role);
+    console.log(selectedRole);
 
     if (session === undefined) {
         return <p>Vérification de l'authentification...</p>;
@@ -66,49 +102,83 @@ export function Dashboard() {
         navigate("/");
     };
 
+    const statsForChart = allThemes.map(el => ({
+        indicateur: el.theme,
+        scoreIndividuel: el.moyenne_perso,
+        scoreEquipe: el.moyenne_equipe
+    }));
+
     return (
-        <div>
-            <h1>Dashboard</h1>
-            <p>Points total : {totalPoints?.total_points ?? 0}</p>
-            <h2>Bienvenue {session?.user?.email}</h2>
-            <p>{profile?.name} {profile?.last_name}</p>
-            <h3>Thèmes à améliorer (Top 3 pires notes) :</h3>
-            {worstThemes.length > 0 ? (
-                <ul>
-                    {worstThemes.map((el: any, index: number) => (
-                        <li key={index}>
-                            <strong>{el.theme}</strong> : {el.moyenne_perso} / 5
-                        </li>
-                    ))}
-                </ul>
-            ) : (
-                <p>Aucune donnée du questionnaire pour le moment.</p>
-            )}
+        <div className="dash-content">
+            <div className="title-container">
+                <h1>Résultats</h1>
+            </div>
+            <div className="user-container">
+                <p>Points total : {totalPoints?.total_points ?? 0}</p>
+                <h2>Bienvenue {session?.user?.email}</h2>
+                <p>{profile?.name} {profile?.last_name}</p>
+            </div>
+
+            <div>
+                <ResultatChart
+                    data={statsForChart}
+                    nomEquipe={teams.find(t => t.uid === selectedTeamId)?.nom_equipe || "Mon Équipe"}
+                />
+            </div>
+
+            <div className="toImprove-container">
+                <h3>Thèmes à améliorer (Top 3 scores les plus bas) :</h3>
+                {worstThemes.length > 0 ? (
+                    <ul>
+                        {worstThemes.map((el: any, index: number) => (
+                            <li key={index}>
+                                <strong>{el.theme}</strong> : {el.moyenne_perso} / 4
+                            </li>
+                        ))}
+                    </ul>
+                ) : (
+                    <p>Aucune donnée du questionnaire pour le moment.</p>
+                )}
+            </div>
 
             <div className="table-container">
                 <ul className="custom-table">
                     <li className="custom-table-header">
                         <div className="cellule">Thèmes</div>
-                        <div className="cellule">Mes points</div>
-                        <div className="cellule">Points de mon équipe</div>
+                        <div className="cellule">Mon score</div>
+                        <div className="cellule">Score de mon équipe</div>
                     </li>
-                    {
-                        allThemes.map((el) => (
-                            <li className="Points-Rangée" key={el.theme}>
-                                <div className="cellule">{el.theme}</div>
-                                <div className="cellule">{el.moyenne_perso}</div>
-                                <div className="cellule">{el.moyenne_equipe}</div>
-                            </li>
-                        ))
-                    }
+                    {allThemes.map((el) => (
+                        <li className="Points-Rangée" key={el.theme}>
+                            <div className="cellule">{el.theme}</div>
+                            <div className="cellule">{el.moyenne_perso}</div>
+                            <div className="cellule">{el.moyenne_equipe}</div>
+                        </li>
+                    ))}
                 </ul>
             </div>
 
+            <div className="role-selection">
+                <h3>Rôle actuel : {selectedRole}</h3>
+                {profile?.user_role === 'manager' && (
+                    <button onClick={() => handleMode("manager")}>Mode Manager</button>
+                )}
 
-            <button onClick={() => setRole("Manager")}>Manager</button>
-            <button onClick={() => setRole("Agent")}>Agent</button>
-            <Link to="/questionnaire">Lancer le questionnaire</Link>
-            <button onClick={handleSignOut}>Se déconnecter</button>
+                {profile?.user_role === 'agent' && (
+                    <button onClick={() => handleMode("agent")}>Mode Agent</button>
+                )}
+
+                {profile?.user_role === 'manager et agent' && (
+                    <>
+                        <button onClick={() => handleMode("manager")}>Mode Manager</button>
+                        <button onClick={() => handleMode("agent")}>Mode Agent</button>
+                    </>
+                )}
+                {questionnaireFait != true && (
+                    <Link to="/questionnaire">Lancer le questionnaire</Link>
+                )}
+                <button onClick={handleSignOut}>Se déconnecter</button>
+            </div>
         </div>
     )
 }
