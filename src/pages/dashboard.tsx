@@ -3,7 +3,7 @@ import {Link, useNavigate} from "react-router-dom";
 import {useEffect, useState} from "react";
 import {getProfileByUserId, type UserProfile} from "../services/profileService.tsx";
 import {getThemeStatsByRole, type ThemeStat} from "../services/themeService.tsx";
-import {getTotalPoints, type TotalPoints} from "../services/questionnaire_sessionsService.tsx";
+import {getQuestionnaireSession, getTotalPoints, type TotalPoints} from "../services/questionnaire_sessionsService.tsx";
 import '../style/side-menu.css';
 import * as React from "react";
 import "../style/dashboard.css"
@@ -11,7 +11,7 @@ import {ResultatChart} from "./Resultat.tsx";
 import {supabase} from "../supabaseClient.tsx";
 
 export function Dashboard() {
-    const {session, signOut, setSelectedRole, selectedRole} = UserAuth();
+    const {session, signOut, setSelectedRole, selectedRole, questionnaireFait} = UserAuth();
     const navigate = useNavigate();
 
     const [profile, setProfile] = useState<UserProfile | null>(null);
@@ -34,17 +34,17 @@ export function Dashboard() {
             if (!user?.id) return;
 
             if (selectedRole === 'manager') {
-                const { data } = await supabase.from('team').select('uid, nom_equipe').eq('manager_id', user.id);
+                const {data} = await supabase.from('team').select('uid, nom_equipe').eq('manager_id', user.id);
                 if (data && data.length > 0) {
                     setTeams(data);
                     setSelectedTeamId(data[0].uid);
                 }
             } else {
-                const { data } = await supabase.from('team_members').select('team_id, team:team_id (uid, nom_equipe)').eq('profile_uid', user.id);
+                const {data} = await supabase.from('team_members').select('team_id, team:team_id (uid, nom_equipe)').eq('profile_uid', user.id);
                 if (data && data.length > 0) {
                     const extractedTeams = data.map((d: any) => Array.isArray(d.team) ? d.team[0] : d.team).filter(Boolean);
                     setTeams(extractedTeams);
-                    if(extractedTeams.length > 0) setSelectedTeamId(extractedTeams[0].uid);
+                    if (extractedTeams.length > 0) setSelectedTeamId(extractedTeams[0].uid);
                 }
             }
         };
@@ -101,7 +101,7 @@ export function Dashboard() {
         await signOut();
         navigate("/");
     };
-    
+
     const statsForChart = allThemes.map(el => ({
         indicateur: el.theme,
         scoreIndividuel: el.moyenne_perso,
@@ -127,18 +127,18 @@ export function Dashboard() {
             </div>
 
             <div className="toImprove-container">
-            <h3>Thèmes à améliorer (Top 3 scores les plus bas) :</h3>
-            {worstThemes.length > 0 ? (
-                <ul>
-                    {worstThemes.map((el: any, index: number) => (
-                        <li key={index}>
-                            <strong>{el.theme}</strong> : {el.moyenne_perso} / 4
-                        </li>
-                    ))}
-                </ul>
-            ) : (
-                <p>Aucune donnée du questionnaire pour le moment.</p>
-            )}
+                <h3>Thèmes à améliorer (Top 3 scores les plus bas) :</h3>
+                {worstThemes.length > 0 ? (
+                    <ul>
+                        {worstThemes.map((el: any, index: number) => (
+                            <li key={index}>
+                                <strong>{el.theme}</strong> : {el.moyenne_perso} / 4
+                            </li>
+                        ))}
+                    </ul>
+                ) : (
+                    <p>Aucune donnée du questionnaire pour le moment.</p>
+                )}
             </div>
 
             <div className="table-container">
@@ -174,7 +174,9 @@ export function Dashboard() {
                         <button onClick={() => handleMode("agent")}>Mode Agent</button>
                     </>
                 )}
-                <Link to="/questionnaire">Lancer le questionnaire</Link>
+                {questionnaireFait != true && (
+                    <Link to="/questionnaire">Lancer le questionnaire</Link>
+                )}
                 <button onClick={handleSignOut}>Se déconnecter</button>
             </div>
         </div>
