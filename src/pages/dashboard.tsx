@@ -111,7 +111,7 @@ export function Dashboard() {
     return (
         <div className="dash-content">
             <div className="title-container">
-                <h1>Dashboard</h1>
+                <h1>Résultats</h1>
             </div>
             <div className="user-container">
                 <p>Points total : {totalPoints?.total_points ?? 0}</p>
@@ -127,26 +127,26 @@ export function Dashboard() {
             </div>
 
             <div className="toImprove-container">
-                <h3>Thèmes à améliorer (Top 3 pires notes) :</h3>
-                {worstThemes.length > 0 ? (
-                    <ul>
-                        {worstThemes.map((el: any, index: number) => (
-                            <li key={index}>
-                                <strong>{el.theme}</strong> : {el.moyenne_perso} / 4
-                            </li>
-                        ))}
-                    </ul>
-                ) : (
-                    <p>Aucune donnée du questionnaire pour le moment.</p>
-                )}
+            <h3>Thèmes à améliorer (Top 3 scores les plus bas) :</h3>
+            {worstThemes.length > 0 ? (
+                <ul>
+                    {worstThemes.map((el: any, index: number) => (
+                        <li key={index}>
+                            <strong>{el.theme}</strong> : {el.moyenne_perso} / 4
+                        </li>
+                    ))}
+                </ul>
+            ) : (
+                <p>Aucune donnée du questionnaire pour le moment.</p>
+            )}
             </div>
 
             <div className="table-container">
                 <ul className="custom-table">
                     <li className="custom-table-header">
                         <div className="cellule">Thèmes</div>
-                        <div className="cellule">Mes points</div>
-                        <div className="cellule">Points de mon équipe</div>
+                        <div className="cellule">Mon score</div>
+                        <div className="cellule">Score de mon équipe</div>
                     </li>
                     {allThemes.map((el) => (
                         <li className="Points-Rangée" key={el.theme}>
