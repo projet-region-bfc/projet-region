@@ -75,7 +75,7 @@ export function Dashboard() {
                     getTotalPoints(session.user.id, selectedRole),
                 ]);
 
-                setProfile(profileData);
+                setProfile(profileData as any);
                 setTotalPoints(pointsData);
             } catch (err) {
                 console.error("Erreur:", err);

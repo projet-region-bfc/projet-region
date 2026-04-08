@@ -25,7 +25,7 @@ export function Formation() {
                     getAllThemes()
                 ]);
 
-                setProfile(profileData);
+                setProfile(profileData as any);
                 setStats(statsData || []);
                 setAllThemes(themesData || []);
             } catch (err) {
