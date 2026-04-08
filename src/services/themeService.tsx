@@ -68,3 +68,17 @@ export const getThemeStatsByRole = async (userId: string, role: string) : Promis
     console.log(data)
     return (data as unknown as ThemeStat[]) || [];
 };
+
+
+export interface ThemeName {
+    name: string;
+}
+
+export const getAllThemes = async (): Promise<ThemeName[]> => {
+    const { data, error } = await supabase
+        .from('theme')
+        .select('name');
+
+    if (error) throw error;
+    return (data as ThemeName[]) || [];
+};
