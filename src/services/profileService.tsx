@@ -9,7 +9,7 @@ export interface UserProfile {
 export const getProfileByUserId = async (userId: string) => {
     const {data, error} = await supabase
         .from('profile_roles_view')
-        .select('name, last_name, user_role')
+        .select('uid, name, last_name, user_role')
         .eq('uid', userId)
         .single();
 

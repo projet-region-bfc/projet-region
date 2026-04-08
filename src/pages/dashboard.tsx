@@ -3,7 +3,7 @@ import {Link, useNavigate} from "react-router-dom";
 import {useEffect, useState} from "react";
 import {getProfileByUserId, type UserProfile} from "../services/profileService.tsx";
 import {getThemeStatsByRole, type ThemeStat} from "../services/themeService.tsx";
-import {getQuestionnaireSession, getTotalPoints, type TotalPoints} from "../services/questionnaire_sessionsService.tsx";
+import {getTotalPoints, type TotalPoints} from "../services/questionnaire_sessionsService.tsx";
 import '../style/side-menu.css';
 import * as React from "react";
 import "../style/dashboard.css"
@@ -53,32 +53,31 @@ export function Dashboard() {
 
     // 2. Charger les stats
     useEffect(() => {
-        if (session === null) {
-            setLoading(false);
+        // MODIF : On attend que la session ET le rôle soient là
+        if (!session?.user?.id || selectedRole === "") {
             return;
         }
 
-        if (!session?.user?.id) return;
         (async () => {
             try {
                 setLoading(true);
-                const statsData = await getThemeStatsByRole(session.user.id, selectedRole);
-                setAllThemes(statsData);
+                // On lance tout en parallèle avec le bon rôle
+                const [statsData, profileData, pointsData] = await Promise.all([
+                    getThemeStatsByRole(session.user.id, selectedRole),
+                    getProfileByUserId(session.user.id),
+                    getTotalPoints(session.user.id, selectedRole),
+                ]);
 
+                setAllThemes(statsData);
                 const sortedWorst = [...statsData]
                     .sort((a, b) => a.moyenne_perso - b.moyenne_perso)
                     .slice(0, 3);
                 setWorstThemes(sortedWorst);
 
-                const [profileData, pointsData] = await Promise.all([
-                    getProfileByUserId(session.user.id),
-                    getTotalPoints(session.user.id, selectedRole),
-                ]);
-
                 setProfile(profileData);
                 setTotalPoints(pointsData);
             } catch (err) {
-                console.error("Erreur:", err);
+                console.error("Erreur chargement Dashboard:", err);
             } finally {
                 setLoading(false);
             }
@@ -86,7 +85,7 @@ export function Dashboard() {
     }, [session, selectedRole]);
 
     console.log(allThemes.length);
-    console.log(selectedRole);
+    console.log("ROLE : " + selectedRole);
 
     if (session === undefined) {
         return <p>Vérification de l'authentification...</p>;
@@ -94,6 +93,7 @@ export function Dashboard() {
     if (session === null) {
         return <p>Accès refusé, veuillez vous connecter.</p>;
     }
+    if (selectedRole === "") return <p>Initialisation du rôle...</p>;
     if (loading) return <p>Chargement de vos statistiques...</p>;
 
     const handleSignOut = async (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -160,24 +160,32 @@ export function Dashboard() {
 
             <div className="role-selection">
                 <h3>Rôle actuel : {selectedRole}</h3>
-                {profile?.user_role === 'manager' && (
-                    <button onClick={() => handleMode("manager")}>Mode Manager</button>
+
+                {/* Bouton Manager : s'affiche si le rôle contient 'manager' */}
+                {profile?.user_role?.includes('manager') && (
+                    <button className="btn-mode" onClick={() => handleMode("manager")}>
+                        Mode Manager
+                    </button>
                 )}
 
-                {profile?.user_role === 'agent' && (
-                    <button onClick={() => handleMode("agent")}>Mode Agent</button>
+                {/* Bouton Agent : s'affiche si le rôle contient 'agent' */}
+                {profile?.user_role?.includes('agent') && (
+                    <button className="btn-mode" onClick={() => handleMode("agent")}>
+                        Mode Agent
+                    </button>
                 )}
 
-                {profile?.user_role === 'manager et agent' && (
-                    <>
-                        <button onClick={() => handleMode("manager")}>Mode Manager</button>
-                        <button onClick={() => handleMode("agent")}>Mode Agent</button>
-                    </>
+                {/* Lien vers le questionnaire : s'affiche si non fait */}
+                {!questionnaireFait && (
+                    <Link className="btn-launch" to="/questionnaire">
+                        Lancer le questionnaire
+                    </Link>
                 )}
-                {questionnaireFait != true && (
-                    <Link to="/questionnaire">Lancer le questionnaire</Link>
-                )}
-                <button onClick={handleSignOut}>Se déconnecter</button>
+
+                {/* Bouton Se déconnecter : unique et à la fin */}
+                <button className="btn-signout" onClick={handleSignOut}>
+                    Se déconnecter
+                </button>
             </div>
         </div>
     )
