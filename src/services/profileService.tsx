@@ -14,6 +14,5 @@ export const getProfileByUserId = async (userId: string) => {
         .single();
 
     if (error) throw error;
-    console.log(data);
     return data;
 }

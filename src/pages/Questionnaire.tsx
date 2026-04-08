@@ -23,8 +23,6 @@ export function Questionnaire() {
     useEffect(() => {
         (async () => {
             try {
-                console.log("Le questionnaire se lance en mode : ", selectedRole);
-
                 const data = await getFullQuestionnaire(selectedRole);
 
                 const listeReponseTemp: Etape[] = [];
@@ -67,7 +65,7 @@ export function Questionnaire() {
 
     return (
         <div className="question-container">
-            <h1 className="question-main-title">Questionnaire</h1>
+            <h1 className="question-main-title">Questionnaire : {selectedRole}</h1>
 
             <p className="question-progress-text">Question {index + 1} / {listeEtapes.length}</p>
             <progress className="question-progress-bar" value={index + 1} max={listeEtapes.length}></progress>
