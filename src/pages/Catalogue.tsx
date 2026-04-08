@@ -1,13 +1,13 @@
-import { useState, useEffect } from "react";
-import { UserAuth } from "../context/AuthContext.tsx";
-import { getThemeStatsByRole, getAllThemes, type ThemeStat, type ThemeName } from "../services/themeService.tsx";
-import { getProfileByUserId, type UserProfile } from "../services/profileService.tsx";
+import {useState, useEffect} from "react";
+import {UserAuth} from "../context/AuthContext.tsx";
+import {getThemeStatsByRole, getAllThemes, type ThemeStat, type ThemeName} from "../services/themeService.tsx";
+import {getProfileByUserId, type UserProfile} from "../services/profileService.tsx";
 import "../style/catalogue.css";
 import {Link} from "react-router-dom";
 
 
 export function Catalogue() {
-    const { session, selectedRole, setSelectedRole } = UserAuth();
+    const {session, selectedRole, setSelectedRole} = UserAuth();
 
     const [stats, setStats] = useState<ThemeStat[]>([]);
     const [allThemes, setAllThemes] = useState<ThemeName[]>([]);
@@ -47,7 +47,9 @@ export function Catalogue() {
     return (
         <div className="catalogue-container">
             <h1>Catalogue de formations et accompagnements</h1>
-            <p>Découvrez l'ensemble des formations, ateliers et démarches d'accompagnement proposés par la Région Bourgogne-Franche-Comté pour développer vos pratiques managériales et renforcer la cohésion de vos équipes.</p>
+            <p>Découvrez l'ensemble des formations, ateliers et démarches d'accompagnement proposés par la Région
+                Bourgogne-Franche-Comté pour développer vos pratiques managériales et renforcer la cohésion de vos
+                équipes.</p>
             <p>
                 Découvrez les solutions pour votre rôle de : <strong>{selectedRole}</strong>
             </p>
@@ -71,7 +73,7 @@ export function Catalogue() {
                 )}
             </div>
 
-            <hr />
+            <hr/>
 
             <div className="themes-grid">
                 {allThemes.length > 0 ? (
@@ -86,16 +88,14 @@ export function Catalogue() {
                                 key={themeItem.name}
                                 className="theme-card-button"
                                 to={`/catalogue/${encodeURIComponent(themeItem.name)}`}
-                                style={{ textDecoration: 'none' }}
+                                style={{textDecoration: 'none'}}
                             >
                     <span className="theme-name">
                         {themeItem.name}
                     </span>
 
-                                <span className={`theme-score ${userStat ? "scored" : "unrated"}`}>
-                                    {userStat
-                                        ? `Score : ${userStat.moyenne_perso} / 4`
-                                        : "Non évalué"}
+                                <span className={`theme-score ${userStat ? "scored" : "unrated"} ${isLowScore ? "low-score" : ""}`}>
+                                    {userStat ? `Score : ${userStat.moyenne_perso} / 4` : "Non évalué"}
                                 </span>
                             </Link>
                         );
