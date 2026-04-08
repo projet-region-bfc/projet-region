@@ -119,3 +119,8 @@
         flex-wrap: wrap;
     }
 }
+
+.theme-score.low-score {
+    color: #d32f2f;
+    background-color: #ffc7c7;
+}

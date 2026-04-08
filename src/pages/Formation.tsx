@@ -76,21 +76,25 @@ export function Formation() {
                     allThemes.map((themeItem) => {
                         const userStat = stats.find(s => s.theme === themeItem.name);
 
+                        // On vérifie si l'utilisateur a un score ET s'il est en dessous de 2
+                        const isLowScore = userStat && userStat.moyenne_perso <= 2;
+
                         return (
                             <button
                                 key={themeItem.name}
                                 className="theme-card-button"
                                 onClick={() => console.log(`Thème sélectionné : ${themeItem.name}`)}
                             >
-                                <span className="theme-name">
-                                    {themeItem.name}
-                                </span>
+                    <span className="theme-name">
+                        {themeItem.name}
+                    </span>
 
-                                <span className={`theme-score ${userStat ? "scored" : "unrated"}`}>
-                                    {userStat
-                                        ? `Score : ${userStat.moyenne_perso} / 4`
-                                        : "Non évalué"}
-                                </span>
+
+                                <span className={`theme-score ${userStat ? "scored" : "unrated"} ${isLowScore ? "low-score" : ""}`}>
+                        {userStat
+                            ? `Score : ${userStat.moyenne_perso} / 4`
+                            : "Non évalué"}
+                    </span>
                             </button>
                         );
                     })
