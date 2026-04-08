@@ -26,7 +26,7 @@ export function Menu() {
                         Lancer le questionnaire
                     </Link>
                 )}
-                <Link to="/formation" className="nav-item active">
+                <Link to="/catalogue" className="nav-item active">
                     Catalogue de formations
                 </Link>
             </nav>

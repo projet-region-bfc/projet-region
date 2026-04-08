@@ -79,12 +79,12 @@ export function Catalogue() {
                         const userStat = stats.find(s => s.theme === themeItem.name);
 
                         return (
-                            <button
+                            <Link
                                 key={themeItem.name}
                                 className="theme-card-button"
-                                onClick={() => console.log(`Thème sélectionné : ${themeItem.name}`)}
+                                to={`/catalogue/${encodeURIComponent(themeItem.name)}`}
+                                style={{ textDecoration: 'none' }}
                             >
-                                <Link to={`/catalogue/${Catalogue.slug}`}></Link>
                                 <span className="theme-name">
                                     {themeItem.name}
                                 </span>
@@ -94,7 +94,7 @@ export function Catalogue() {
                                         ? `Score : ${userStat.moyenne_perso} / 4`
                                         : "Non évalué"}
                                 </span>
-                            </button>
+                            </Link>
                         );
                     })
                 ) : (
