@@ -20,6 +20,8 @@ export function Dashboard() {
     const [loading, setLoading] = useState(true);
     const [allThemes, setAllThemes] = useState<ThemeStat[]>([]);
     const handleMode = (role: string) => {
+        setAllThemes([]); // Vide le graphique immédiatement
+        setSelectedTeamId(""); // Force l'attente de la nouvelle équipe
         setSelectedRole(role);
     };
 
@@ -51,33 +53,33 @@ export function Dashboard() {
         fetchTeams();
     }, [user, selectedRole]);
 
-    // 2. Charger les stats
+    // 2. Charger les stats (Version Sécurisée)
     useEffect(() => {
-        // MODIF : On attend que la session ET le rôle soient là
-        if (!session?.user?.id || selectedRole === "") {
+        // CONDITION DE GARDE : On ne fait rien si l'ID d'équipe n'est pas encore chargé
+        if (!session?.user?.id || !selectedRole || !selectedTeamId) {
             return;
         }
 
-        if (!session?.user?.id) return;
-        (async () => {
+        const fetchData = async () => {
             try {
                 setLoading(true);
 
-                // On lance les 3 appels en une seule fois (plus rapide et évite les doublons)
+                // On vide les thèmes actuels pour éviter les collisions de clés React pendant le chargement
+                setAllThemes([]);
+
                 const [statsData, profileData, pointsData] = await Promise.all([
-                    getThemeStatsByRole(session.user.id, selectedRole),
+                    getThemeStatsByRole(session.user.id, selectedRole, selectedTeamId),
                     getProfileByUserId(session.user.id),
                     getTotalPoints(session.user.id, selectedRole),
                 ]);
 
-                // Mise à jour des stats et des thèmes à améliorer
                 setAllThemes(statsData);
+
                 const sortedWorst = [...statsData]
                     .sort((a, b) => a.moyenne_perso - b.moyenne_perso)
                     .slice(0, 3);
                 setWorstThemes(sortedWorst);
 
-                // Mise à jour du profil et des points
                 setProfile(profileData as any);
                 setTotalPoints(pointsData);
 
@@ -86,8 +88,10 @@ export function Dashboard() {
             } finally {
                 setLoading(false);
             }
-        })();
-    }, [session, selectedRole]);
+        };
+
+        fetchData();
+    }, [session, selectedRole, selectedTeamId]); // On ajoute selectedTeamId en dépendance !
 
     console.log(allThemes.length);
     console.log("ROLE : " + selectedRole);
@@ -154,7 +158,8 @@ export function Dashboard() {
                         <div className="cellule">Score de mon équipe</div>
                     </li>
                     {allThemes.map((el) => (
-                        <li className="Points-Rangée" key={el.theme}>
+                        // Utilise une combinaison du thème et de l'équipe pour garantir l'unicité
+                        <li className="Points-Rangée" key={`${selectedTeamId}-${el.theme}`}>
                             <div className="cellule">{el.theme}</div>
                             <div className="cellule">{el.moyenne_perso}</div>
                             <div className="cellule">{el.moyenne_equipe}</div>
