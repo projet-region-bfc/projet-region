@@ -58,14 +58,14 @@ export const getFullQuestionnaire = async (role: 'manager' | 'agent'): Promise<R
 export const getThemeStatsByRole = async (userId: string, role: string, teamId?: string) : Promise<ThemeStat[]> => {
     const normalizedRole = role.toLowerCase();
 
-    // On prépare la requête
+    
     let query = supabase
         .from('theme_stats_view' as any)
         .select('theme, moyenne_perso, moyenne_equipe')
         .eq('profile_id', userId)
         .eq('target_role', normalizedRole);
 
-    // Si on a fourni un teamId, on l'ajoute au filtre
+    
     if (teamId) {
         query = query.eq('team_id', teamId);
     }

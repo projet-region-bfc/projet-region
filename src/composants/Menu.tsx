@@ -17,9 +17,9 @@ export function Menu() {
                 <Link to="/dashboard" className="nav-item active">
                     Résultats
                 </Link>
-                {/*<Link to="/questionnaire" className="nav-item active">*/}
-                {/*    Lancer le questionnaire*/}
-                {/*</Link>*/}
+                {}
+                {}
+                {}
                 {questionnaireFait != true && (
                     <Link to="/questionnaire" className="nav-item active">
                         Lancer le questionnaire

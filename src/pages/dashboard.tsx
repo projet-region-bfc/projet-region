@@ -6,9 +6,10 @@ import '../style/side-menu.css';
 import "../style/dashboard.css"
 import { ResultatChart } from "./Resultat.tsx";
 import { supabase } from "../supabaseClient.tsx";
+import {Link} from "react-router-dom";
 
 export function Dashboard() {
-    // 1. On récupère le profile centralisé et les fonctions de l'AuthContext
+    
     const { session, setSelectedRole, selectedRole, questionnaireFait, profile } = UserAuth();
 
     const [worstThemes, setWorstThemes] = useState<ThemeStat[]>([]);
@@ -26,7 +27,7 @@ export function Dashboard() {
 
     const user = session?.user;
 
-    // 2. Charger les équipes (dynamique selon Agent ou Manager)
+    
     useEffect(() => {
         const fetchTeams = async () => {
             if (!user?.id) return;
@@ -49,7 +50,7 @@ export function Dashboard() {
         fetchTeams();
     }, [user, selectedRole]);
 
-    // 3. Charger les stats (Version Sécurisée et allégée)
+    
     useEffect(() => {
         if (!session?.user?.id || !selectedRole || !selectedTeamId) {
             return;
@@ -60,7 +61,7 @@ export function Dashboard() {
                 setLoading(true);
                 setAllThemes([]);
 
-                // On ne charge plus le profil ici, il vient du contexte !
+                
                 const [statsData, pointsData] = await Promise.all([
                     getThemeStatsByRole(session.user.id, selectedRole, selectedTeamId),
                     getTotalPoints(session.user.id, selectedRole),
@@ -103,7 +104,7 @@ export function Dashboard() {
             <div className="user-container">
                 <p>Points total : {totalPoints?.total_points ?? 0}</p>
                 <h2>Bienvenue {session?.user?.email}</h2>
-                {/* On utilise le profil global directement */}
+                {}
                 <p>{profile?.name} {profile?.last_name}</p>
             </div>
 

@@ -3,7 +3,7 @@ import { UserAuth } from "../context/AuthContext.tsx";
 import { useNavigate } from "react-router-dom";
 
 export default function Header() {
-    // On récupère tout ce qu'on a centralisé dans le contexte
+    
     const { session, profile, loading, signOut } = UserAuth();
     const navigate = useNavigate();
 
@@ -12,7 +12,7 @@ export default function Header() {
         navigate("/login");
     };
 
-    // Gestion des états de chargement ou d'absence de session
+    
     if (session === undefined || loading) {
         return (
             <header className="header">
@@ -22,7 +22,7 @@ export default function Header() {
     }
 
     if (session === null) {
-        return null; // Pas de header si pas de session
+        return null; 
     }
 
     return (
@@ -33,7 +33,7 @@ export default function Header() {
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                     <circle cx="12" cy="7" r="4"></circle>
                 </svg>
-                {/* On utilise les données du profil globales */}
+                {}
                 <span className="user-name">
                     {profile?.name} {profile?.last_name}
                 </span>

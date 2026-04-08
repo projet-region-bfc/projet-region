@@ -74,11 +74,11 @@ export function Questionnaire() {
             const sessionData = await insertQuestionnaireSession(session.user.id, selectedRole);
             const sessionId = sessionData.uid;
 
-            // Correction des clés pour correspondre exactement au SQL : _uid au lieu de _id
+            
             const reponsesFormatees = Object.entries(reponsesChoisies).map(([idCategorie, idReponse]) => ({
-                session_uid: sessionId,  // SQL: session_uid
-                category_uid: idCategorie, // SQL: category_uid
-                reponse_uid: idReponse     // SQL: reponse_uid
+                session_uid: sessionId,  
+                category_uid: idCategorie, 
+                reponse_uid: idReponse     
             }));
 
             await insertQuestionnaireResults(reponsesFormatees);
@@ -90,7 +90,7 @@ export function Questionnaire() {
             console.error("Erreur :", err);
             alert("Une erreur est survenue.");
         } finally {
-            setIsSubmitting(false); // On libère le bouton quoi qu'il arrive
+            setIsSubmitting(false); 
         }
     };
 
@@ -128,7 +128,7 @@ export function Questionnaire() {
                     <button
                         className="question-btn-primaire"
                         onClick={sendReponse}
-                        disabled={!dejaRepondu || isSubmitting} // Empêche le double clic
+                        disabled={!dejaRepondu || isSubmitting} 
                     >
                         {isSubmitting ? "Envoi..." : "Terminer"}
                     </button>

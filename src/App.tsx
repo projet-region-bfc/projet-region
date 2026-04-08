@@ -1,6 +1,6 @@
 import { Routes, Route, Navigate, Outlet, HashRouter } from "react-router-dom";
 
-// Pages
+
 import { Login } from "./pages/login.tsx";
 import { Signup } from "./pages/signup.tsx";
 import { Dashboard } from "./pages/dashboard.tsx";
@@ -8,15 +8,15 @@ import { Questionnaire } from "./pages/Questionnaire.tsx";
 import { Catalogue } from './pages/Catalogue.tsx';
 import { ResultatChart } from "./pages/Resultat.tsx";
 
-// Composants
+
 import { Menu } from "./composants/Menu.tsx";
 import Header from '../src/composants/header.tsx';
 import { ProtectedRoute } from "./composants/ProtectedRoute.tsx";
 
-// Contexte
+
 import { UserAuth } from "./context/AuthContext.tsx";
 
-// Styles
+
 import './style/page.css';
 import './header.css';
 import {Formations} from "./pages/Formations.tsx";

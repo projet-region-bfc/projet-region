@@ -8,14 +8,14 @@ const AuthContext = createContext<any>(undefined);
 
 export const AuthContextProvider = ({children}: { children: ReactNode }) => {
     const [session, setSession] = useState<Session | null>(null);
-    const [profile, setProfile] = useState<UserProfile | null>(null); // <-- AJOUT : On stocke le profil ici
+    const [profile, setProfile] = useState<UserProfile | null>(null); 
     const [loading, setLoading] = useState(true);
     const [selectedRole, setSelectedRole] = useState<string>("");
     const [questionnaireStatus, setQuestionnaireStatus] = useState<number>(0);
 
     const questionnaireFait = questionnaireStatus > 0;
 
-    // Fonction pour rafraîchir le statut du questionnaire (utile après avoir répondu)
+    
     const refreshQuestionnaireStatus = async (userId: string, role: string) => {
         const status = await getQuestionnaireSession(userId, role);
         setQuestionnaireStatus(status || 0);
@@ -32,11 +32,11 @@ export const AuthContextProvider = ({children}: { children: ReactNode }) => {
         (async () => {
             try {
                 setLoading(true);
-                // 1. On récupère le profil une seule fois pour toute l'app
+                
                 const profileData = await getProfileByUserId(session.user.id);
                 setProfile(profileData as UserProfile);
 
-                // 2. Détermination du rôle par défaut (Priorité Manager)
+                
                 const userRole = profileData?.user_role || "";
                 let initialRole = "";
                 if (userRole.includes("manager")) {
@@ -47,7 +47,7 @@ export const AuthContextProvider = ({children}: { children: ReactNode }) => {
 
                 if (initialRole) {
                     setSelectedRole(initialRole);
-                    // 3. On check le questionnaire pour ce rôle précis
+                    
                     await refreshQuestionnaireStatus(session.user.id, initialRole);
                 }
             } catch (err) {
@@ -58,7 +58,7 @@ export const AuthContextProvider = ({children}: { children: ReactNode }) => {
         })();
     }, [session]);
 
-    // Écouter le changement de rôle pour mettre à jour le statut du questionnaire
+    
     useEffect(() => {
         if (session?.user?.id && selectedRole) {
             refreshQuestionnaireStatus(session.user.id, selectedRole);
@@ -95,7 +95,7 @@ export const AuthContextProvider = ({children}: { children: ReactNode }) => {
         <AuthContext.Provider value={{
             session,
             user: session?.user,
-            profile, // <-- On expose le profil à toute l'app
+            profile, 
             loading,
             signInUser,
             signOut,

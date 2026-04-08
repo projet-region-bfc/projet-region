@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { UserAuth } from "../context/AuthContext.tsx";
 import { getThemeStatsByRole, getAllThemes, type ThemeStat, type ThemeName } from "../services/themeService.tsx";
 import "../style/catalogue.css";
-// On s'assure d'importer le CSS du dashboard si c'est là que sont définis les styles des boutons
+
 import "../style/dashboard.css";
 import { Link } from "react-router-dom";
 
@@ -48,7 +48,7 @@ export function Catalogue() {
                 <p>Bienvenue dans votre espace de développement, <strong>{profile?.name}</strong>.</p>
                 <p>Voici les formations adaptées à votre profil <strong>{selectedRole}</strong>.</p>
 
-                {/* --- BLOC DE SWITCH DE ROLE HARMONISÉ --- */}
+                {}
                 <div className="role-switch">
                     <h3>Changer de rôle :</h3>
 

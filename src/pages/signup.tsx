@@ -31,7 +31,7 @@ export function Signup() {
 
     return (
         <div className="signup-page">
-            {/* --- LE LOGO ET LE TITRE --- */} 
+            {} 
             <img src={logoImg} alt="Logo" className="signup-logo-img" />
 
             <header className="signup-header">
