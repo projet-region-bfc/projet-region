@@ -27,7 +27,7 @@ export interface ThemeName {
 
 export const getThemeStats = async (userId: string, order: 'ASC' | 'DESC'): Promise<ThemeStat[]> => {
     const query = supabase
-        .from('theme_stats_view')
+        .from('theme_stats_view' as any)
         .select('theme, moyenne_perso')
         .eq('profile_id', userId)
         .order('moyenne_perso', { ascending: order === 'ASC' })
@@ -59,7 +59,7 @@ export const getThemeStatsByRole = async (userId: string, role: string) : Promis
     const normalizedRole = role.toLowerCase();
 
     const { data, error } = await supabase
-        .from('theme_stats_view')
+        .from('theme_stats_view' as any)
         .select('theme, moyenne_perso, moyenne_equipe')
         .eq('profile_id', userId)
         .eq('target_role', normalizedRole);
@@ -67,4 +67,18 @@ export const getThemeStatsByRole = async (userId: string, role: string) : Promis
     if (error) throw error;
     console.log(data)
     return (data as unknown as ThemeStat[]) || [];
+};
+
+
+export interface ThemeName {
+    name: string;
+}
+
+export const getAllThemes = async (): Promise<ThemeName[]> => {
+    const { data, error } = await supabase
+        .from('theme')
+        .select('name');
+
+    if (error) throw error;
+    return (data as ThemeName[]) || [];
 };

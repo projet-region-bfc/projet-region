@@ -33,7 +33,8 @@ export function Login() {
         <main className="login-page">
             <header className="login-header">
                 <img src={logoImg} alt="Logo Bourgogne Franche-Comté" className="logo-img" />
-                <h1 className="logo-text">La région</h1>
+                <h1 className="logo-text">Indice de la maturité des <br/>
+                    équipes et du management</h1>
                 <p className="subtitle">Connectez-vous pour accéder à votre espace</p>
             </header>
 

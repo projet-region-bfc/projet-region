@@ -1,6 +1,7 @@
 import {useState, useEffect} from "react";
 import {getFullQuestionnaire} from "../services/themeService.tsx";
 import {UserAuth} from "../context/AuthContext.tsx";
+import {insertQuestionnaireResults, insertQuestionnaireSession} from "../services/questionnaire_sessionsService.tsx";
 
 interface Etape {
     idCategorie: string;
@@ -14,11 +15,12 @@ interface Etape {
 }
 
 export function Questionnaire() {
-    const { selectedRole } = UserAuth();
+    const {session, selectedRole} = UserAuth();
     const [listeEtapes, setListeEtapes] = useState<Etape[]>([]);
     const [index, setIndex] = useState(0);
     const [reponsesChoisies, setReponsesChoisies] = useState<Record<string, string>>({});
     const [chargement, setchargement] = useState(true);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
         (async () => {
@@ -62,6 +64,35 @@ export function Questionnaire() {
     };
 
     console.log(reponsesChoisies)
+    Object.entries(reponsesChoisies).forEach(([idCategorie, idReponse]) => {
+        console.log(`Pour la catégorie ${idCategorie}, la réponse est ${idReponse}`);
+    });
+
+    const sendReponse = async () => {
+        try {
+            setIsSubmitting(true);
+            const sessionData = await insertQuestionnaireSession(session.user.id, selectedRole);
+            const sessionId = sessionData.uid;
+
+            // Correction des clés pour correspondre exactement au SQL : _uid au lieu de _id
+            const reponsesFormatees = Object.entries(reponsesChoisies).map(([idCategorie, idReponse]) => ({
+                session_uid: sessionId,  // SQL: session_uid
+                category_uid: idCategorie, // SQL: category_uid
+                reponse_uid: idReponse     // SQL: reponse_uid
+            }));
+
+            await insertQuestionnaireResults(reponsesFormatees);
+
+            alert(`Bravo ! Questionnaire enregistré.`);
+            window.location.href = "/dashboard";
+
+        } catch (err) {
+            console.error("Erreur :", err);
+            alert("Une erreur est survenue.");
+        } finally {
+            setIsSubmitting(false); // On libère le bouton quoi qu'il arrive
+        }
+    };
 
     return (
         <div className="question-container">
@@ -89,12 +120,17 @@ export function Questionnaire() {
 
             <div className="question-actions-container">
                 {index < listeEtapes.length - 1 ? (
-                    <button className="question-btn-primaire" onClick={() => setIndex(index + 1)} disabled={!dejaRepondu}>
+                    <button className="question-btn-primaire" onClick={() => setIndex(index + 1)}
+                            disabled={!dejaRepondu}>
                         Suivant
                     </button>
                 ) : (
-                    <button className="question-btn-primaire" onClick={() => alert("Fini !")} disabled={!dejaRepondu}>
-                        Terminer
+                    <button
+                        className="question-btn-primaire"
+                        onClick={sendReponse}
+                        disabled={!dejaRepondu || isSubmitting} // Empêche le double clic
+                    >
+                        {isSubmitting ? "Envoi..." : "Terminer"}
                     </button>
                 )}
 
