@@ -5,7 +5,7 @@ import { Login } from "./pages/login.tsx";
 import { Signup } from "./pages/signup.tsx";
 import { Dashboard } from "./pages/dashboard.tsx";
 import { Questionnaire } from "./pages/Questionnaire.tsx";
-import { Formation } from './pages/Formation.tsx';
+import { Catalogue } from './pages/Catalogue.tsx';
 import { ResultatChart } from "./pages/Resultat.tsx";
 
 // Composants
@@ -19,6 +19,7 @@ import { UserAuth } from "./context/AuthContext.tsx";
 // Styles
 import './style/page.css';
 import './header.css';
+import {Formations} from "./pages/Formations.tsx";
 
 
 
@@ -54,8 +55,9 @@ function App() {
                             <Route path="/" element={<Navigate to="/dashboard" replace />} />
                             <Route path="/dashboard" element={<Dashboard/>}/>
                             <Route path="/questionnaire" element={<Questionnaire/>}/>
-                            <Route path="/formation" element={<Formation/>}/>
+                            <Route path="/catalogue" element={<Catalogue/>}/>
                             <Route path="/resultat" element={<ResultatChart data={[]} nomEquipe="Test" />}/>
+                            <Route path="/catalogue/:slug" element={<Formations />}/>
                         </Route>
                     </Route>
                 </Routes>

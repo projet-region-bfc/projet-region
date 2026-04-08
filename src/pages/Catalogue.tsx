@@ -2,9 +2,11 @@ import { useState, useEffect } from "react";
 import { UserAuth } from "../context/AuthContext.tsx";
 import { getThemeStatsByRole, getAllThemes, type ThemeStat, type ThemeName } from "../services/themeService.tsx";
 import { getProfileByUserId, type UserProfile } from "../services/profileService.tsx";
-import "../style/formation.css";
+import "../style/catalogue.css";
+import {Link} from "react-router-dom";
 
-export function Formation() {
+
+export function Catalogue() {
     const { session, selectedRole, setSelectedRole } = UserAuth();
 
     const [stats, setStats] = useState<ThemeStat[]>([]);
@@ -43,7 +45,7 @@ export function Formation() {
     if (loading) return <p>Chargement du catalogue...</p>;
 
     return (
-        <div className="formation-container">
+        <div className="catalogue-container">
             <h1>Catalogue de formations et accompagnements</h1>
             <p>Découvrez l'ensemble des formations, ateliers et démarches d'accompagnement proposés par la Région Bourgogne-Franche-Comté pour développer vos pratiques managériales et renforcer la cohésion de vos équipes.</p>
             <p>
@@ -80,22 +82,22 @@ export function Formation() {
                         const isLowScore = userStat && userStat.moyenne_perso <= 2;
 
                         return (
-                            <button
+                            <Link
                                 key={themeItem.name}
                                 className="theme-card-button"
-                                onClick={() => console.log(`Thème sélectionné : ${themeItem.name}`)}
+                                to={`/catalogue/${encodeURIComponent(themeItem.name)}`}
+                                style={{ textDecoration: 'none' }}
                             >
                     <span className="theme-name">
                         {themeItem.name}
                     </span>
 
-
-                                <span className={`theme-score ${userStat ? "scored" : "unrated"} ${isLowScore ? "low-score" : ""}`}>
-                        {userStat
-                            ? `Score : ${userStat.moyenne_perso} / 4`
-                            : "Non évalué"}
-                    </span>
-                            </button>
+                                <span className={`theme-score ${userStat ? "scored" : "unrated"}`}>
+                                    {userStat
+                                        ? `Score : ${userStat.moyenne_perso} / 4`
+                                        : "Non évalué"}
+                                </span>
+                            </Link>
                         );
                     })
                 ) : (

@@ -11,7 +11,7 @@
     --border-color: #dee2e6;
 }
 
-.formation-container {
+.catalogue-container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
@@ -19,7 +19,7 @@
     color: var(--text-main);
 }
 
-.formation-container h1 {
+.catalogue-container h1 {
     font-size: 1.8rem;
     margin-bottom: 10px;
 }
