@@ -11,7 +11,7 @@
     --border-color: #dee2e6;
 }
 
-.formation-container {
+.catalogue-container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
@@ -19,7 +19,7 @@
     color: var(--text-main);
 }
 
-.formation-container h1 {
+.catalogue-container h1 {
     font-size: 1.8rem;
     margin-bottom: 10px;
 }
@@ -31,6 +31,7 @@
 }
 
 .role-switch button {
+    flex: 0 1 auto;
     padding: 10px 20px;
     border: 2px solid #d1d5db;
     background-color: var(--neutral-bg);
@@ -58,6 +59,7 @@
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 20px;
     margin-top: 30px;
+    align-items: stretch;
 }
 
 .theme-card-button {
@@ -74,6 +76,8 @@
     transition: transform 0.2s ease, box-shadow 0.2s ease;
     text-align: center;
     width: 100%;
+    height: 100%;
+    box-sizing: border-box;
 }
 
 .theme-card-button:hover {
@@ -86,10 +90,14 @@
     font-size: 1.1rem;
     font-weight: 600;
     color: var(--text-main);
-    display: block;
+    margin-bottom: 20px;
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
 }
 
 .theme-score {
+    flex-shrink: 0;
     display: inline-block;
     font-size: 0.85rem;
     font-weight: 700;
@@ -118,4 +126,13 @@
         flex-direction: row;
         flex-wrap: wrap;
     }
+
+    .role-switch button {
+        flex: 1 1 45%;
+    }
+}
+
+.theme-score.low-score {
+    color: #d32f2f;
+    background-color: #ffc7c7;
 }

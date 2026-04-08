@@ -58,24 +58,29 @@ export function Dashboard() {
             return;
         }
 
+        if (!session?.user?.id) return;
         (async () => {
             try {
                 setLoading(true);
-                // On lance tout en parallèle avec le bon rôle
+
+                // On lance les 3 appels en une seule fois (plus rapide et évite les doublons)
                 const [statsData, profileData, pointsData] = await Promise.all([
                     getThemeStatsByRole(session.user.id, selectedRole),
                     getProfileByUserId(session.user.id),
                     getTotalPoints(session.user.id, selectedRole),
                 ]);
 
+                // Mise à jour des stats et des thèmes à améliorer
                 setAllThemes(statsData);
                 const sortedWorst = [...statsData]
                     .sort((a, b) => a.moyenne_perso - b.moyenne_perso)
                     .slice(0, 3);
                 setWorstThemes(sortedWorst);
 
-                setProfile(profileData);
+                // Mise à jour du profil et des points
+                setProfile(profileData as any);
                 setTotalPoints(pointsData);
+
             } catch (err) {
                 console.error("Erreur chargement Dashboard:", err);
             } finally {

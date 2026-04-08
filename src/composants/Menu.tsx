@@ -2,7 +2,6 @@ import {Link} from 'react-router-dom';
 import '../style/side-menu.css';
 import {UserAuth} from "../context/AuthContext.tsx";
 import logoImg from "../assets/logo.png";
-import * as React from "react";
 
 export function Menu() {
     const {questionnaireFait} = UserAuth();
@@ -26,7 +25,7 @@ export function Menu() {
                         Lancer le questionnaire
                     </Link>
                 )}
-                <Link to="/formation" className="nav-item active">
+                <Link to="/catalogue" className="nav-item active">
                     Catalogue de formations
                 </Link>
             </nav>

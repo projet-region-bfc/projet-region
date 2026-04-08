@@ -2,9 +2,11 @@ import { useState, useEffect } from "react";
 import { UserAuth } from "../context/AuthContext.tsx";
 import { getThemeStatsByRole, getAllThemes, type ThemeStat, type ThemeName } from "../services/themeService.tsx";
 import { getProfileByUserId, type UserProfile } from "../services/profileService.tsx";
-import "../style/formation.css";
+import "../style/catalogue.css";
+import {Link} from "react-router-dom";
 
-export function Formation() {
+
+export function Catalogue() {
     const { session, selectedRole, setSelectedRole } = UserAuth();
 
     const [stats, setStats] = useState<ThemeStat[]>([]);
@@ -25,7 +27,7 @@ export function Formation() {
                     getAllThemes()
                 ]);
 
-                setProfile(profileData);
+                setProfile(profileData as any);
                 setStats(statsData || []);
                 setAllThemes(themesData || []);
             } catch (err) {
@@ -43,7 +45,7 @@ export function Formation() {
     if (loading) return <p>Chargement du catalogue...</p>;
 
     return (
-        <div className="formation-container">
+        <div className="catalogue-container">
             <h1>Catalogue de formations et accompagnements</h1>
             <p>Découvrez l'ensemble des formations, ateliers et démarches d'accompagnement proposés par la Région Bourgogne-Franche-Comté pour développer vos pratiques managériales et renforcer la cohésion de vos équipes.</p>
             <p>
@@ -76,22 +78,26 @@ export function Formation() {
                     allThemes.map((themeItem) => {
                         const userStat = stats.find(s => s.theme === themeItem.name);
 
+                        // On vérifie si l'utilisateur a un score ET s'il est en dessous de 2
+                        const isLowScore = userStat && userStat.moyenne_perso <= 2;
+
                         return (
-                            <button
+                            <Link
                                 key={themeItem.name}
                                 className="theme-card-button"
-                                onClick={() => console.log(`Thème sélectionné : ${themeItem.name}`)}
+                                to={`/catalogue/${encodeURIComponent(themeItem.name)}`}
+                                style={{ textDecoration: 'none' }}
                             >
-                                <span className="theme-name">
-                                    {themeItem.name}
-                                </span>
+                    <span className="theme-name">
+                        {themeItem.name}
+                    </span>
 
                                 <span className={`theme-score ${userStat ? "scored" : "unrated"}`}>
                                     {userStat
                                         ? `Score : ${userStat.moyenne_perso} / 4`
                                         : "Non évalué"}
                                 </span>
-                            </button>
+                            </Link>
                         );
                     })
                 ) : (
