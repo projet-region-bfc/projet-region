@@ -66,6 +66,8 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
+    gap: 12px;
     padding: 30px 20px;
     background-color: var(--bg-card);
     border: 1px solid var(--border-color);
@@ -128,4 +130,9 @@
     .role-switch button {
         flex: 1 1 45%;
     }
+}
+
+.theme-score.low-score {
+    color: #d32f2f;
+    background-color: #ffc7c7;
 }

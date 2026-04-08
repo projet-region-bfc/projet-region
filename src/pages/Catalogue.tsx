@@ -78,6 +78,9 @@ export function Catalogue() {
                     allThemes.map((themeItem) => {
                         const userStat = stats.find(s => s.theme === themeItem.name);
 
+                        // On vérifie si l'utilisateur a un score ET s'il est en dessous de 2
+                        const isLowScore = userStat && userStat.moyenne_perso <= 2;
+
                         return (
                             <Link
                                 key={themeItem.name}
@@ -85,9 +88,9 @@ export function Catalogue() {
                                 to={`/catalogue/${encodeURIComponent(themeItem.name)}`}
                                 style={{ textDecoration: 'none' }}
                             >
-                                <span className="theme-name">
-                                    {themeItem.name}
-                                </span>
+                    <span className="theme-name">
+                        {themeItem.name}
+                    </span>
 
                                 <span className={`theme-score ${userStat ? "scored" : "unrated"}`}>
                                     {userStat
