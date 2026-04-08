@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate, Outlet } from "react-router-dom";
+import { Routes, Route, Navigate, Outlet, HashRouter } from "react-router-dom";
 
 // Pages
 import { Login } from "./pages/login.tsx";
@@ -46,7 +46,7 @@ function App() {
 
     return (
         <div className="App">
-            <BrowserRouter>
+            <HashRouter>
                 <Routes>
                     <Route path="/login" element={session ? <Navigate to="/dashboard" replace /> : <Login />} />
                     <Route path="/signup" element={session ? <Navigate to="/dashboard" replace /> : <Signup />} />
@@ -61,7 +61,7 @@ function App() {
                         </Route>
                     </Route>
                 </Routes>
-            </BrowserRouter>
+            </HashRouter>
         </div>
     )
 }

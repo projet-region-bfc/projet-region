@@ -25,7 +25,7 @@ export const getTotalPoints = async (userId: string, role: string): Promise<Tota
 
 export const getQuestionnaireSession = async (userId: string, role: string) => {
     const { data, error } = await supabase
-        .from('user_questionnaire_status_view')
+        .from('user_questionnaire_status_view' as any)
         .select('statut_questionnaire')
         .eq('profile_id', userId)
         .eq('questionnaire_role', role);

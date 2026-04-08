@@ -32,7 +32,7 @@ export default function Header() {
                 const [profileData] = await Promise.all([
                     getProfileByUserId(session.user.id),
                 ]);
-                setProfile(profileData);
+                setProfile(profileData as any);
             } catch (err) {
                 console.error("Erreur chargement dashboard:", err);
             } finally {

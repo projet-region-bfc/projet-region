@@ -27,7 +27,7 @@ export function Catalogue() {
                     getAllThemes()
                 ]);
 
-                setProfile(profileData);
+                setProfile(profileData as any);
                 setStats(statsData || []);
                 setAllThemes(themesData || []);
             } catch (err) {

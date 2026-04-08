@@ -2,7 +2,6 @@ import {Link} from 'react-router-dom';
 import '../style/side-menu.css';
 import {UserAuth} from "../context/AuthContext.tsx";
 import logoImg from "../assets/logo.png";
-import * as React from "react";
 
 export function Menu() {
     const {questionnaireFait} = UserAuth();

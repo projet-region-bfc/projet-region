@@ -3,7 +3,7 @@ import {Link, useNavigate} from "react-router-dom";
 import {useEffect, useState} from "react";
 import {getProfileByUserId, type UserProfile} from "../services/profileService.tsx";
 import {getThemeStatsByRole, type ThemeStat} from "../services/themeService.tsx";
-import {getQuestionnaireSession, getTotalPoints, type TotalPoints} from "../services/questionnaire_sessionsService.tsx";
+import {getTotalPoints, type TotalPoints} from "../services/questionnaire_sessionsService.tsx";
 import '../style/side-menu.css';
 import * as React from "react";
 import "../style/dashboard.css"
@@ -75,7 +75,7 @@ export function Dashboard() {
                     getTotalPoints(session.user.id, selectedRole),
                 ]);
 
-                setProfile(profileData);
+                setProfile(profileData as any);
                 setTotalPoints(pointsData);
             } catch (err) {
                 console.error("Erreur:", err);
