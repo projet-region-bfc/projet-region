@@ -2,6 +2,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { UserAuth } from "../context/AuthContext.tsx";
 import { useEffect, useState } from "react";
 import { getOffreByThemeAndRole, type OffreFormation } from "../services/catalogueService.tsx";
+import '../style/formations.css';
 
 export function Formations() {
     const { slug } = useParams<{ slug: string }>();
