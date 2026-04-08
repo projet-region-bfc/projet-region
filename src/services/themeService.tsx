@@ -73,7 +73,7 @@ export const getThemeStatsByRole = async (userId: string, role: string, teamId?:
     const { data, error } = await query;
 
     if (error) throw error;
-    console.log("Stats chargées :", data);
+    
     return (data as unknown as ThemeStat[]) || [];
 };
 

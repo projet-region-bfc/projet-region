@@ -63,9 +63,9 @@ export function Questionnaire() {
         });
     };
 
-    console.log(reponsesChoisies)
+    
     Object.entries(reponsesChoisies).forEach(([idCategorie, idReponse]) => {
-        console.log(`Pour la catégorie ${idCategorie}, la réponse est ${idReponse}`);
+        
     });
 
     const sendReponse = async () => {
