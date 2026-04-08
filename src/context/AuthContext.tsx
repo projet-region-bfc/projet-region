@@ -2,22 +2,28 @@ import {createContext, useState, useContext, type ReactNode, useEffect} from "re
 import {supabase} from "../supabaseClient.tsx";
 import type {Session} from "@supabase/supabase-js";
 import {getQuestionnaireSession} from "../services/questionnaire_sessionsService.tsx";
-import {getProfileByUserId} from "../services/profileService.tsx";
+import {getProfileByUserId, type UserProfile} from "../services/profileService.tsx";
 
-// Création du contexte
 const AuthContext = createContext<any>(undefined);
 
 export const AuthContextProvider = ({children}: { children: ReactNode }) => {
     const [session, setSession] = useState<Session | null>(null);
+    const [profile, setProfile] = useState<UserProfile | null>(null); // <-- AJOUT : On stocke le profil ici
     const [loading, setLoading] = useState(true);
     const [selectedRole, setSelectedRole] = useState<string>("");
     const [questionnaireStatus, setQuestionnaireStatus] = useState<number>(0);
 
     const questionnaireFait = questionnaireStatus > 0;
 
+    // Fonction pour rafraîchir le statut du questionnaire (utile après avoir répondu)
+    const refreshQuestionnaireStatus = async (userId: string, role: string) => {
+        const status = await getQuestionnaireSession(userId, role);
+        setQuestionnaireStatus(status || 0);
+    };
+
     useEffect(() => {
-        // 1. Si pas de session, on reset tout et on s'arrête
         if (!session?.user?.id) {
+            setProfile(null);
             setSelectedRole("");
             setQuestionnaireStatus(0);
             return;
@@ -25,40 +31,39 @@ export const AuthContextProvider = ({children}: { children: ReactNode }) => {
 
         (async () => {
             try {
-                // 2. On récupère TOUJOURS le profil du nouvel utilisateur
-                const profile = await getProfileByUserId(session.user.id);
-                const userRole = profile?.user_role || "";
+                setLoading(true);
+                // 1. On récupère le profil une seule fois pour toute l'app
+                const profileData = await getProfileByUserId(session.user.id);
+                setProfile(profileData as UserProfile);
 
-                // 3. Détermination du rôle cible (Priorité Manager)
-                let roleToSet = "";
-                if (userRole.includes('manager')) {
-                    roleToSet = 'manager';
-                } else {
-                    roleToSet = 'agent';
+                // 2. Détermination du rôle par défaut (Priorité Manager)
+                const userRole = profileData?.user_role || "";
+                let initialRole = "";
+                if (userRole.includes("manager")) {
+                    initialRole = "manager";
+                } else if (userRole.includes("agent")) {
+                    initialRole = "agent";
                 }
 
-                // 4. On met à jour le selectedRole si c'est une nouvelle connexion
-                // ou si on n'a pas encore de rôle défini
-                if (selectedRole === "") {
-                    setSelectedRole(roleToSet);
+                if (initialRole) {
+                    setSelectedRole(initialRole);
+                    // 3. On check le questionnaire pour ce rôle précis
+                    await refreshQuestionnaireStatus(session.user.id, initialRole);
                 }
-
-                // 5. On vérifie le statut du questionnaire avec le bon rôle
-                // On utilise selectedRole s'il existe (cas du switch manuel), sinon le rôle calculé
-                const roleForStatus = selectedRole !== "" ? selectedRole : roleToSet;
-                const count = await getQuestionnaireSession(session.user.id, roleForStatus);
-                setQuestionnaireStatus(count ?? 0);
-
             } catch (err) {
-                console.error("Erreur initialisation Auth:", err);
+                console.error("Erreur AuthContext Initialisation:", err);
+            } finally {
+                setLoading(false);
             }
         })();
-    }, [session?.user?.id, selectedRole]); // <--- ON SURVEILLE L'ID PRÉCIS ET LE ROLE
+    }, [session]);
 
-    const signUpNewUser = async (email: string, password: string) => {
-        const {data, error} = await supabase.auth.signUp({email, password});
-        return error ? {success: false, error} : {success: true, data};
-    };
+    // Écouter le changement de rôle pour mettre à jour le statut du questionnaire
+    useEffect(() => {
+        if (session?.user?.id && selectedRole) {
+            refreshQuestionnaireStatus(session.user.id, selectedRole);
+        }
+    }, [selectedRole, session]);
 
     const signInUser = async (email: string, password: string) => {
         const {data, error} = await supabase.auth.signInWithPassword({email, password});
@@ -68,18 +73,17 @@ export const AuthContextProvider = ({children}: { children: ReactNode }) => {
     const signOut = async () => {
         await supabase.auth.signOut();
         setSession(null);
+        setProfile(null);
         setSelectedRole("");
         setQuestionnaireStatus(0);
-    }
+    };
 
     useEffect(() => {
-        // Récupérer la session initiale
         supabase.auth.getSession().then(({data: {session}}) => {
             setSession(session);
-            setLoading(false);
+            if (!session) setLoading(false);
         });
 
-        // Écouter les changements (login/logout)
         const {data: {subscription}} = supabase.auth.onAuthStateChange((_event, session) => {
             setSession(session);
         });
@@ -91,21 +95,21 @@ export const AuthContextProvider = ({children}: { children: ReactNode }) => {
         <AuthContext.Provider value={{
             session,
             user: session?.user,
+            profile, // <-- On expose le profil à toute l'app
             loading,
-            signUpNewUser,
             signInUser,
             signOut,
             selectedRole,
             setSelectedRole,
             questionnaireStatus,
-            questionnaireFait
+            questionnaireFait,
+            refreshQuestionnaireStatus
         }}>
             {children}
         </AuthContext.Provider>
     );
 };
 
-// Le Hook personnalisé pour utiliser l'auth partout
 export const UserAuth = () => {
     return useContext(AuthContext);
 };

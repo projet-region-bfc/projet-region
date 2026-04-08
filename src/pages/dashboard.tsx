@@ -1,48 +1,44 @@
-import {UserAuth} from "../context/AuthContext.tsx";
-import {Link, useNavigate} from "react-router-dom";
-import {useEffect, useState} from "react";
-import {getProfileByUserId, type UserProfile} from "../services/profileService.tsx";
-import {getThemeStatsByRole, type ThemeStat} from "../services/themeService.tsx";
-import {getTotalPoints, type TotalPoints} from "../services/questionnaire_sessionsService.tsx";
+import { UserAuth } from "../context/AuthContext.tsx";
+import { useEffect, useState } from "react";
+import { getThemeStatsByRole, type ThemeStat } from "../services/themeService.tsx";
+import { getTotalPoints, type TotalPoints } from "../services/questionnaire_sessionsService.tsx";
 import '../style/side-menu.css';
-import * as React from "react";
 import "../style/dashboard.css"
-import {ResultatChart} from "./Resultat.tsx";
-import {supabase} from "../supabaseClient.tsx";
+import { ResultatChart } from "./Resultat.tsx";
+import { supabase } from "../supabaseClient.tsx";
 
 export function Dashboard() {
-    const {session, signOut, setSelectedRole, selectedRole, questionnaireFait} = UserAuth();
-    const navigate = useNavigate();
+    // 1. On récupère le profile centralisé et les fonctions de l'AuthContext
+    const { session, setSelectedRole, selectedRole, questionnaireFait, profile } = UserAuth();
 
-    const [profile, setProfile] = useState<UserProfile | null>(null);
     const [worstThemes, setWorstThemes] = useState<ThemeStat[]>([]);
     const [totalPoints, setTotalPoints] = useState<TotalPoints | null>(null);
     const [loading, setLoading] = useState(true);
     const [allThemes, setAllThemes] = useState<ThemeStat[]>([]);
+    const [teams, setTeams] = useState<{ uid: string; nom_equipe: string }[]>([]);
+    const [selectedTeamId, setSelectedTeamId] = useState<string>("");
+
     const handleMode = (role: string) => {
-        setAllThemes([]); // Vide le graphique immédiatement
-        setSelectedTeamId(""); // Force l'attente de la nouvelle équipe
+        setAllThemes([]);
+        setSelectedTeamId("");
         setSelectedRole(role);
     };
 
     const user = session?.user;
 
-    const [teams, setTeams] = useState<{ uid: string; nom_equipe: string }[]>([]);
-    const [selectedTeamId, setSelectedTeamId] = useState<string>("");
-
-    // 1. Charger les équipes (dynamique selon Agent ou Manager)
+    // 2. Charger les équipes (dynamique selon Agent ou Manager)
     useEffect(() => {
         const fetchTeams = async () => {
             if (!user?.id) return;
 
             if (selectedRole === 'manager') {
-                const {data} = await supabase.from('team').select('uid, nom_equipe').eq('manager_id', user.id);
+                const { data } = await supabase.from('team').select('uid, nom_equipe').eq('manager_id', user.id);
                 if (data && data.length > 0) {
                     setTeams(data);
                     setSelectedTeamId(data[0].uid);
                 }
             } else {
-                const {data} = await supabase.from('team_members').select('team_id, team:team_id (uid, nom_equipe)').eq('profile_uid', user.id);
+                const { data } = await supabase.from('team_members').select('team_id, team:team_id (uid, nom_equipe)').eq('profile_uid', user.id);
                 if (data && data.length > 0) {
                     const extractedTeams = data.map((d: any) => Array.isArray(d.team) ? d.team[0] : d.team).filter(Boolean);
                     setTeams(extractedTeams);
@@ -53,9 +49,8 @@ export function Dashboard() {
         fetchTeams();
     }, [user, selectedRole]);
 
-    // 2. Charger les stats (Version Sécurisée)
+    // 3. Charger les stats (Version Sécurisée et allégée)
     useEffect(() => {
-        // CONDITION DE GARDE : On ne fait rien si l'ID d'équipe n'est pas encore chargé
         if (!session?.user?.id || !selectedRole || !selectedTeamId) {
             return;
         }
@@ -63,13 +58,11 @@ export function Dashboard() {
         const fetchData = async () => {
             try {
                 setLoading(true);
-
-                // On vide les thèmes actuels pour éviter les collisions de clés React pendant le chargement
                 setAllThemes([]);
 
-                const [statsData, profileData, pointsData] = await Promise.all([
+                // On ne charge plus le profil ici, il vient du contexte !
+                const [statsData, pointsData] = await Promise.all([
                     getThemeStatsByRole(session.user.id, selectedRole, selectedTeamId),
-                    getProfileByUserId(session.user.id),
                     getTotalPoints(session.user.id, selectedRole),
                 ]);
 
@@ -79,8 +72,6 @@ export function Dashboard() {
                     .sort((a, b) => a.moyenne_perso - b.moyenne_perso)
                     .slice(0, 3);
                 setWorstThemes(sortedWorst);
-
-                setProfile(profileData as any);
                 setTotalPoints(pointsData);
 
             } catch (err) {
@@ -91,25 +82,12 @@ export function Dashboard() {
         };
 
         fetchData();
-    }, [session, selectedRole, selectedTeamId]); // On ajoute selectedTeamId en dépendance !
+    }, [session, selectedRole, selectedTeamId]);
 
-    console.log(allThemes.length);
-    console.log("ROLE : " + selectedRole);
-
-    if (session === undefined) {
-        return <p>Vérification de l'authentification...</p>;
-    }
-    if (session === null) {
-        return <p>Accès refusé, veuillez vous connecter.</p>;
-    }
+    if (session === undefined) return <p>Vérification de l'authentification...</p>;
+    if (session === null) return <p>Accès refusé, veuillez vous connecter.</p>;
     if (selectedRole === "") return <p>Initialisation du rôle...</p>;
     if (loading) return <p>Chargement de vos statistiques...</p>;
-
-    const handleSignOut = async (e: React.MouseEvent<HTMLButtonElement>) => {
-        e.preventDefault();
-        await signOut();
-        navigate("/");
-    };
 
     const statsForChart = allThemes.map(el => ({
         indicateur: el.theme,
@@ -125,6 +103,7 @@ export function Dashboard() {
             <div className="user-container">
                 <p>Points total : {totalPoints?.total_points ?? 0}</p>
                 <h2>Bienvenue {session?.user?.email}</h2>
+                {/* On utilise le profil global directement */}
                 <p>{profile?.name} {profile?.last_name}</p>
             </div>
 
@@ -139,8 +118,8 @@ export function Dashboard() {
                 <h3>Thèmes à améliorer (Top 3 scores les plus bas) :</h3>
                 {worstThemes.length > 0 ? (
                     <ul>
-                        {worstThemes.map((el: any, index: number) => (
-                            <li key={index}>
+                        {worstThemes.map((el, index) => (
+                            <li key={`${selectedTeamId}-worst-${index}`}>
                                 <strong>{el.theme}</strong> : {el.moyenne_perso} / 4
                             </li>
                         ))}
@@ -158,7 +137,6 @@ export function Dashboard() {
                         <div className="cellule">Score de mon équipe</div>
                     </li>
                     {allThemes.map((el) => (
-                        // Utilise une combinaison du thème et de l'équipe pour garantir l'unicité
                         <li className="Points-Rangée" key={`${selectedTeamId}-${el.theme}`}>
                             <div className="cellule">{el.theme}</div>
                             <div className="cellule">{el.moyenne_perso}</div>
@@ -168,34 +146,32 @@ export function Dashboard() {
                 </ul>
             </div>
 
-            <div className="role-selection">
-                <h3>Rôle actuel : {selectedRole}</h3>
+            <div className="role-switch">
+                <h3>Rôle actuel : <strong>{selectedRole}</strong></h3>
 
-                {/* Bouton Manager : s'affiche si le rôle contient 'manager' */}
                 {profile?.user_role?.includes('manager') && (
-                    <button className="btn-mode" onClick={() => handleMode("manager")}>
+                    <button
+                        className={selectedRole === 'manager' ? 'active' : ''}
+                        onClick={() => handleMode("manager")}
+                    >
                         Mode Manager
                     </button>
                 )}
 
-                {/* Bouton Agent : s'affiche si le rôle contient 'agent' */}
                 {profile?.user_role?.includes('agent') && (
-                    <button className="btn-mode" onClick={() => handleMode("agent")}>
+                    <button
+                        className={selectedRole === 'agent' ? 'active' : ''}
+                        onClick={() => handleMode("agent")}
+                    >
                         Mode Agent
                     </button>
                 )}
 
-                {/* Lien vers le questionnaire : s'affiche si non fait */}
                 {!questionnaireFait && (
                     <Link className="btn-launch" to="/questionnaire">
                         Lancer le questionnaire
                     </Link>
                 )}
-
-                {/* Bouton Se déconnecter : unique et à la fin */}
-                <button className="btn-signout" onClick={handleSignOut}>
-                    Se déconnecter
-                </button>
             </div>
         </div>
     )

@@ -1,18 +1,21 @@
-import {useState, useEffect} from "react";
-import {UserAuth} from "../context/AuthContext.tsx";
-import {getThemeStatsByRole, getAllThemes, type ThemeStat, type ThemeName} from "../services/themeService.tsx";
-import {getProfileByUserId, type UserProfile} from "../services/profileService.tsx";
+import { useState, useEffect } from "react";
+import { UserAuth } from "../context/AuthContext.tsx";
+import { getThemeStatsByRole, getAllThemes, type ThemeStat, type ThemeName } from "../services/themeService.tsx";
 import "../style/catalogue.css";
-import {Link} from "react-router-dom";
-
+// On s'assure d'importer le CSS du dashboard si c'est là que sont définis les styles des boutons
+import "../style/dashboard.css";
+import { Link } from "react-router-dom";
 
 export function Catalogue() {
-    const {session, selectedRole, setSelectedRole} = UserAuth();
+    const { session, selectedRole, setSelectedRole, profile } = UserAuth();
 
     const [stats, setStats] = useState<ThemeStat[]>([]);
     const [allThemes, setAllThemes] = useState<ThemeName[]>([]);
-    const [profile, setProfile] = useState<UserProfile | null>(null);
     const [loading, setLoading] = useState(true);
+
+    const handleMode = (role: string) => {
+        setSelectedRole(role);
+    };
 
     useEffect(() => {
         if (!session?.user?.id) return;
@@ -20,18 +23,14 @@ export function Catalogue() {
         const fetchData = async () => {
             try {
                 setLoading(true);
-
-                const [profileData, statsData, themesData] = await Promise.all([
-                    getProfileByUserId(session.user.id),
+                const [statsData, themesData] = await Promise.all([
                     getThemeStatsByRole(session.user.id, selectedRole),
                     getAllThemes()
                 ]);
-
-                setProfile(profileData as any);
                 setStats(statsData || []);
                 setAllThemes(themesData || []);
             } catch (err) {
-                console.error("Erreur chargement formation:", err);
+                console.error("Erreur chargement catalogue:", err);
             } finally {
                 setLoading(false);
             }
@@ -40,37 +39,37 @@ export function Catalogue() {
         fetchData();
     }, [session, selectedRole]);
 
-    if (session === undefined) return <p>Vérification de l'identité...</p>;
-    if (session === null) return <p>Veuillez vous connecter.</p>;
-    if (loading) return <p>Chargement du catalogue...</p>;
+    if (loading) return <div className="loading">Chargement du catalogue...</div>;
 
     return (
         <div className="catalogue-container">
-            <h1>Catalogue de formations et accompagnements</h1>
-            <p>Découvrez l'ensemble des formations, ateliers et démarches d'accompagnement proposés par la Région
-                Bourgogne-Franche-Comté pour développer vos pratiques managériales et renforcer la cohésion de vos
-                équipes.</p>
-            <p>
-                Découvrez les solutions pour votre rôle de : <strong>{selectedRole}</strong>
-            </p>
+            <div className="catalogue-header">
+                <h1>Catalogue de formations</h1>
+                <p>Bienvenue dans votre espace de développement, <strong>{profile?.name}</strong>.</p>
+                <p>Voici les formations adaptées à votre profil <strong>{selectedRole}</strong>.</p>
 
-            <div className="role-switch">
-                {(profile?.user_role === 'agent' || profile?.user_role === 'manager et agent') && (
-                    <button
-                        className={selectedRole === 'agent' ? "active" : ""}
-                        onClick={() => setSelectedRole('agent')}
-                    >
-                        Mode Agent
-                    </button>
-                )}
-                {(profile?.user_role === 'manager' || profile?.user_role === 'manager et agent') && (
-                    <button
-                        className={selectedRole === 'manager' ? "active" : ""}
-                        onClick={() => setSelectedRole('manager')}
-                    >
-                        Mode Manager
-                    </button>
-                )}
+                {/* --- BLOC DE SWITCH DE ROLE HARMONISÉ --- */}
+                <div className="role-switch">
+                    <h3>Changer de rôle :</h3>
+
+                    {profile?.user_role?.includes('manager') && (
+                        <button
+                            className={selectedRole === 'manager' ? 'active' : ''}
+                            onClick={() => handleMode("manager")}
+                        >
+                            Mode Manager
+                        </button>
+                    )}
+
+                    {profile?.user_role?.includes('agent') && (
+                        <button
+                            className={selectedRole === 'agent' ? 'active' : ''}
+                            onClick={() => handleMode("agent")}
+                        >
+                            Mode Agent
+                        </button>
+                    )}
+                </div>
             </div>
 
             <hr/>
@@ -79,8 +78,6 @@ export function Catalogue() {
                 {allThemes.length > 0 ? (
                     allThemes.map((themeItem) => {
                         const userStat = stats.find(s => s.theme === themeItem.name);
-
-                        // On vérifie si l'utilisateur a un score ET s'il est en dessous de 2
                         const isLowScore = userStat && userStat.moyenne_perso <= 2;
 
                         return (
@@ -90,9 +87,9 @@ export function Catalogue() {
                                 to={`/catalogue/${encodeURIComponent(themeItem.name)}`}
                                 style={{textDecoration: 'none'}}
                             >
-                    <span className="theme-name">
-                        {themeItem.name}
-                    </span>
+                                <span className="theme-name">
+                                    {themeItem.name}
+                                </span>
 
                                 <span className={`theme-score ${userStat ? "scored" : "unrated"} ${isLowScore ? "low-score" : ""}`}>
                                     {userStat ? `Score : ${userStat.moyenne_perso} / 4` : "Non évalué"}

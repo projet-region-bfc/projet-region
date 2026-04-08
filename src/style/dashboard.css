@@ -5,73 +5,59 @@
   color: #111;
   display: flex;
   flex-direction: column;
-  gap: 24px; 
-  text-align: left; 
+  gap: 24px;
+  text-align: left;
 }
 
-.title-container {
+.title-container h1 {
   font-size: 32px;
   margin: 0;
   color: #111;
 }
 
-.user-container, 
-.toImprove-container, 
-.table-container, 
-.role-selection {
+.user-container,
+.toImprove-container,
+.table-container,
+.role-switch {
   background-color: white;
   border-radius: 12px;
   padding: 24px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
   border: 1px solid #e5e7eb;
-  text-align: left; 
+  text-align: left;
 }
 
-.user-container { 
-  margin: 5px 0; 
+.user-container {
   font-size: 15px;
-   color: #555; 
+  color: #555;
 }
 
-.user-container { 
-  font-weight: bold; 
-  color: #111;
+.user-container h2 {
+  margin: 10px 0;
+  font-size: 24px;
+  color: #117D88;
 }
-
-.user-container h2 { 
-  margin: 10px 0; 
-  font-size: 24px; 
-  color: #117D88; 
-}
-
-
-.toImprove-container {
-  margin: 0 0 16px 0;
-  font-size: 18px;
-}
-
 
 .toImprove-container ul {
   list-style: none;
   padding: 0;
-  margin: 0;
+  margin: 16px 0 0 0;
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 
 .toImprove-container li {
-  background-color: #FEF2F2; 
+  background-color: #FEF2F2;
   color: #991B1B;
   padding: 12px 16px;
   border-radius: 8px;
-  border-left: 4px solid #EF4444; 
-  display: flex;
+  border-left: 4px solid #EF4444;
   font-size: 15px;
 }
 
 .table-container {
-  padding: 0; 
+  padding: 0;
   overflow: hidden;
 }
 
@@ -94,63 +80,85 @@
   display: flex;
   padding: 16px 24px;
   border-bottom: 1px solid #F1F5F9;
-}
-.Points-Rangée { 
-  border-bottom: none; 
+  transition: background-color 0.2s;
 }
 
-.Points-Rangée:hover { 
-  background-color: #F8FAFC; 
+.Points-Rangée:hover {
+  background-color: #F8FAFC;
 }
 
 .cellule {
-  flex: 1; 
+  flex: 1;
   text-align: center;
-  border: none !important; 
 }
 
 .cellule:first-child {
-  flex: 2; 
+  flex: 2;
   text-align: left;
   font-weight: 500;
 }
 
-.role-selection {
+/* --- SYSTÈME DE SWITCH DE ROLE --- */
+.role-switch {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 15px;
+  gap: 12px;
 }
 
-.role-selection h3 {
+.role-switch h3 {
   margin: 0;
   font-size: 16px;
+  width: 100%;
+  margin-bottom: 5px;
 }
 
-.role-selection button,
-.role-selection a {
+.role-switch button,
+.role-switch .btn-launch {
   padding: 10px 20px;
   border-radius: 6px;
   font-size: 14px;
   font-weight: bold;
   text-decoration: none;
   cursor: pointer;
-  border: none;
-  transition: 0.2s;
+  border: 2px solid #d1d5db;
+  transition: all 0.2s ease;
+  background-color: #f8fafc;
+  color: #64748b;
 }
 
-.role-selection button:nth-of-type(1),
-.role-selection button:nth-of-type(2) {
-  background-color: #E8F4F5;
-  color: #117D88;
+.role-switch button:hover:not(.active) {
+  background-color: #e2e8f0;
+  border-color: #94a3b8;
 }
 
-.role-selection a {
-  background-color: #66B5B3; 
+.role-switch button.active {
+  background-color: #117D88; /* Bleu/Vert primaire */
   color: white;
-  margin-left: auto; 
+  border-color: #117D88;
+  box-shadow: 0 2px 4px rgba(17, 125, 136, 0.3);
 }
 
-.role-selection a:hover {
+.role-switch .btn-launch {
+  background-color: #66B5B3;
+  color: white;
+  border: none;
+  margin-left: auto;
+}
+
+.role-switch .btn-launch:hover {
   background-color: #117D88;
+}
+
+.role-switch .btn-signout {
+  background-color: transparent;
+  color: #ef4444;
+  border: 1px solid #fecaca;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.role-switch .btn-signout:hover {
+  background-color: #fef2f2;
 }

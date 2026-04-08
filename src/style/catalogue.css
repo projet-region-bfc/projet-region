@@ -1,13 +1,13 @@
 :root {
-    --primary-color: #007bff;
-    --primary-hover: #0056b3;
+    --primary-color: #117D88; /* Harmonisé avec le Dashboard */
+    --primary-hover: #0d616a;
     --bg-card: #ffffff;
     --bg-page: #f9fbfd;
     --text-main: #333333;
     --text-muted: #666666;
     --success-bg: #e6fffa;
     --success-text: #28a745;
-    --neutral-bg: #f4f4f4;
+    --neutral-bg: #f8fafc;
     --border-color: #dee2e6;
 }
 
@@ -15,23 +15,31 @@
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: Arial, sans-serif;
     color: var(--text-main);
 }
 
-.catalogue-container h1 {
+.catalogue-header h1 {
     font-size: 1.8rem;
     margin-bottom: 10px;
 }
 
+/* --- SYSTÈME DE SWITCH DE ROLE (Identique au Dashboard) --- */
 .role-switch {
     display: flex;
     gap: 12px;
     margin-bottom: 25px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.role-switch h3 {
+    margin: 0;
+    font-size: 16px;
+    width: 100%;
 }
 
 .role-switch button {
-    flex: 0 1 auto;
     padding: 10px 20px;
     border: 2px solid #d1d5db;
     background-color: var(--neutral-bg);
@@ -51,15 +59,15 @@
     background-color: var(--primary-color);
     color: white;
     border-color: var(--primary-color);
-    box-shadow: 0 2px 4px rgba(0, 123, 255, 0.3);
+    box-shadow: 0 2px 4px rgba(17, 125, 136, 0.3);
 }
 
+/* --- GRILLE DES THEMES --- */
 .themes-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 20px;
     margin-top: 30px;
-    align-items: stretch;
 }
 
 .theme-card-button {
@@ -75,9 +83,7 @@
     cursor: pointer;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
     text-align: center;
-    width: 100%;
-    height: 100%;
-    box-sizing: border-box;
+    text-decoration: none;
 }
 
 .theme-card-button:hover {
@@ -90,21 +96,17 @@
     font-size: 1.1rem;
     font-weight: 600;
     color: var(--text-main);
-    margin-bottom: 20px;
-    flex-grow: 1;
+    min-height: 50px;
     display: flex;
     align-items: center;
 }
 
 .theme-score {
-    flex-shrink: 0;
-    display: inline-block;
     font-size: 0.85rem;
     font-weight: 700;
     padding: 6px 12px;
     border-radius: 20px;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
 }
 
 .theme-score.scored {
@@ -117,22 +119,13 @@
     color: #94a3b8;
 }
 
-@media (max-width: 600px) {
-    .themes-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .role-switch {
-        flex-direction: row;
-        flex-wrap: wrap;
-    }
-
-    .role-switch button {
-        flex: 1 1 45%;
-    }
-}
-
 .theme-score.low-score {
     color: #d32f2f;
     background-color: #ffc7c7;
+}
+
+@media (max-width: 600px) {
+    .role-switch button {
+        flex: 1 1 45%;
+    }
 }
