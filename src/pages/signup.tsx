@@ -35,7 +35,8 @@ export function Signup() {
             <img src={logoImg} alt="Logo" className="signup-logo-img" />
 
             <header className="signup-header">
-                <h1 className="signup-main-title">Indice de la maturité des équipes et du management</h1>
+                <h1 className="signup-main-title">Indice de la maturité des <br/>
+                    équipes et du management</h1>
                 <p className="signup-main-subtitle">
                     Créez votre compte pour accéder à votre espace
                 </p>
