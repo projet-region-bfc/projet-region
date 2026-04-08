@@ -98,6 +98,7 @@ export function Dashboard() {
 
     return (
         <div className="dash-content">
+
             <div className="title-container">
                 <h1>Résultats</h1>
             </div>
@@ -113,6 +114,34 @@ export function Dashboard() {
                     data={statsForChart}
                     nomEquipe={teams.find(t => t.uid === selectedTeamId)?.nom_equipe || "Mon Équipe"}
                 />
+            </div>
+
+            <div className="role-switch">
+                <h3>Rôle actuel : <strong>{selectedRole}</strong></h3>
+
+                {profile?.user_role?.includes('manager') && (
+                    <button
+                        className={selectedRole === 'manager' ? 'active' : ''}
+                        onClick={() => handleMode("manager")}
+                    >
+                        Mode Manager
+                    </button>
+                )}
+
+                {profile?.user_role?.includes('agent') && (
+                    <button
+                        className={selectedRole === 'agent' ? 'active' : ''}
+                        onClick={() => handleMode("agent")}
+                    >
+                        Mode Agent
+                    </button>
+                )}
+
+                {!questionnaireFait && (
+                    <Link className="btn-launch" to="/questionnaire">
+                        Lancer le questionnaire
+                    </Link>
+                )}
             </div>
 
             <div className="toImprove-container">
@@ -147,33 +176,6 @@ export function Dashboard() {
                 </ul>
             </div>
 
-            <div className="role-switch">
-                <h3>Rôle actuel : <strong>{selectedRole}</strong></h3>
-
-                {profile?.user_role?.includes('manager') && (
-                    <button
-                        className={selectedRole === 'manager' ? 'active' : ''}
-                        onClick={() => handleMode("manager")}
-                    >
-                        Mode Manager
-                    </button>
-                )}
-
-                {profile?.user_role?.includes('agent') && (
-                    <button
-                        className={selectedRole === 'agent' ? 'active' : ''}
-                        onClick={() => handleMode("agent")}
-                    >
-                        Mode Agent
-                    </button>
-                )}
-
-                {!questionnaireFait && (
-                    <Link className="btn-launch" to="/questionnaire">
-                        Lancer le questionnaire
-                    </Link>
-                )}
-            </div>
         </div>
     )
 }

@@ -16,14 +16,20 @@ export function Login() {
     const handleSignIn = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
-        setError("");
+        setError(""); // On réinitialise l'erreur au début de la tentative
+
         try {
             const result = await signInUser(email, password);
+
             if (result.success) {
                 navigate("/dashboard");
+            } else {
+                // Si Supabase renvoie une erreur (ex: identifiants invalides)
+                setError("Adresse mail ou mot de passe invalide.");
             }
         } catch (err) {
-            setError("Identifiants incorrects ou problème de connexion.");
+            // En cas de problème réseau ou erreur inattendue
+            setError("Un problème de connexion est survenu. Veuillez réessayer.");
         } finally {
             setLoading(false);
         }
