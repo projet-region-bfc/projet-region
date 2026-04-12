@@ -37,7 +37,7 @@ export const AuthContextProvider = ({children}: { children: ReactNode }) => {
                 setProfile(profileData as UserProfile);
 
                 
-                const userRole = profileData?.user_role || "";
+                const userRole = (profileData as any)?.user_role || "";
                 let initialRole = "";
                 if (userRole.includes("manager")) {
                     initialRole = "manager";

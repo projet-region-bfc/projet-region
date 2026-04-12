@@ -10,11 +10,11 @@ export interface OffreFormation {
 
 export const getOffreByThemeAndRole = async (themeName: string, role: string): Promise<OffreFormation[]> => {
     const { data, error } = await supabase
-        .from('resultats_offre')
+        .from('resultats_offre' as any)
         .select('*')
         .eq('theme_name', themeName)
         .eq('role', role);
 
     if (error) throw error;
-    return (data as OffreFormation[]) || [];
+    return (data as unknown as OffreFormation[]) || [];
 };
