@@ -34,7 +34,7 @@ export const AuthContextProvider = ({children}: { children: ReactNode }) => {
                 setLoading(true);
                 
                 const profileData = await getProfileByUserId(session.user.id);
-                setProfile(profileData as UserProfile);
+                setProfile(profileData as any as UserProfile);
 
                 
                 const userRole = (profileData as any)?.user_role || "";

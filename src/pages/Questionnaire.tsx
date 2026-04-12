@@ -63,10 +63,6 @@ export function Questionnaire() {
         });
     };
 
-    
-    Object.entries(reponsesChoisies).forEach(([idCategorie, idReponse]) => {
-        
-    });
 
     const sendReponse = async () => {
         try {
