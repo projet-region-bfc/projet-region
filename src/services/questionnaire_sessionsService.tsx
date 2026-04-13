@@ -4,35 +4,22 @@ export interface TotalPoints {
     total_points: number | null;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 export const getTotalPoints = async (userId: string, role: string): Promise<TotalPoints> => {
+    const cleanRole = role.trim().toLowerCase();
+
     const { data, error } = await supabase
         .from('questionnaire_sessions')
         .select('total_points')
         .eq('profile_id', userId)
-        .eq('role' as any, role.toLowerCase()); 
+        .eq('role', cleanRole);
 
-    if (error) throw error;
+    if (error) {
+        console.error("Erreur getTotalPoints:", error);
+        throw error;
+    }
 
-    const sum = data?.reduce((acc, curr) => acc + (curr.total_points || 0), 0) || 0;
+    const sum = data?.reduce((acc, curr) => acc + (Number(curr.total_points) || 0), 0) || 0;
+
     return { total_points: sum };
 }
 
