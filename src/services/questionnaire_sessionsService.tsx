@@ -11,7 +11,7 @@ export const getTotalPoints = async (userId: string, role: string): Promise<Tota
         .from('questionnaire_sessions')
         .select('total_points')
         .eq('profile_id', userId)
-        .eq('role', cleanRole);
+        .eq('role' as any, cleanRole);
 
     if (error) {
         console.error("Erreur getTotalPoints:", error);
