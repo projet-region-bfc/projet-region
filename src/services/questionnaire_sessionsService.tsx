@@ -55,3 +55,14 @@ export const insertQuestionnaireResults = async (results: any[]) => {
 
     if (error) throw error;
 };
+
+export const deleteQuestionnaireSession = async (userId: string, role: string) => {
+    const { data, error } = await supabase
+        .from('questionnaire_sessions')
+        .delete()
+        .eq('profile_id', userId)
+        .eq('role', role.toLowerCase());
+
+    if (error) throw error;
+    return data;
+};

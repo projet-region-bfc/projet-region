@@ -1,7 +1,7 @@
 import { UserAuth } from "../context/AuthContext.tsx";
 import { useEffect, useState } from "react";
 import { getThemeStatsByRole, type ThemeStat } from "../services/themeService.tsx";
-import { getTotalPoints, type TotalPoints } from "../services/questionnaire_sessionsService.tsx";
+import { getTotalPoints, type TotalPoints, deleteQuestionnaireSession } from "../services/questionnaire_sessionsService.tsx";
 import '../style/side-menu.css';
 import "../style/dashboard.css"
 import { ResultatChart } from "./Resultat.tsx";
@@ -10,7 +10,7 @@ import {Link} from "react-router-dom";
 
 export function Dashboard() {
     
-    const { session, setSelectedRole, selectedRole, questionnaireFait, profile } = UserAuth();
+    const { session, setSelectedRole, selectedRole, questionnaireFait, profile, refreshQuestionnaireStatus } = UserAuth();
 
     const [worstThemes, setWorstThemes] = useState<ThemeStat[]>([]);
     const [totalPoints, setTotalPoints] = useState<TotalPoints | null>(null);
@@ -23,6 +23,27 @@ export function Dashboard() {
         setAllThemes([]);
         setSelectedTeamId("");
         setSelectedRole(role);
+    };
+
+    const handleReset = async () => {
+        if (!user?.id) return;
+
+        const confirmation = window.confirm(`Voulez-vous vraiment supprimer vos résultats ${selectedRole === 'manager' ? 'Manager' : 'Agent'} et recommencer le questionnaire ?`);
+
+        if (confirmation) {
+            try {
+                await deleteQuestionnaireSession(user.id, selectedRole);
+                // Met à jour l'état global (le menu changera tout seul)
+                await refreshQuestionnaireStatus(user.id, selectedRole);
+                // Rafraîchit les données du dashboard
+                setTotalPoints(null);
+                setAllThemes([]);
+                alert("Session réinitialisée ! Vous pouvez refaire le questionnaire.");
+            } catch (error) {
+                console.error("Erreur suppression:", error);
+                alert("Erreur lors de la suppression.");
+            }
+        }
     };
 
     const user = session?.user;
@@ -104,6 +125,17 @@ export function Dashboard() {
             </div>
             <div className="user-container">
                 <p>Points total : {totalPoints?.total_points ?? 0}</p>
+
+                {questionnaireFait && (
+                    <button
+                        onClick={handleReset}
+                        className="reset-btn" // Tu pourras créer la classe plus tard ou laisser tel quel
+                        style={{ cursor: 'pointer', marginTop: '10px' }}
+                    >
+                        Réinitialiser mon questionnaire {selectedRole === 'manager' ? 'Manager' : 'Agent'}
+                    </button>
+                )}
+
                 <h2>Bienvenue {session?.user?.email}</h2>
                 {}
                 <p>{profile?.name} {profile?.last_name}</p>

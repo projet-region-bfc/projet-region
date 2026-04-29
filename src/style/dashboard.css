@@ -162,3 +162,38 @@
 .role-switch .btn-signout:hover {
   background-color: #fef2f2;
 }
+
+.reset-btn {
+  margin-top: 15px;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid #fee2e2; /* Bordure rouge très clair */
+  background-color: #fef2f2; /* Fond rouge très pâle */
+  color: #dc2626; /* Texte rouge vif */
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.reset-btn:hover {
+  background-color: #fee2e2;
+  border-color: #fca5a5;
+  color: #b91c1c;
+  box-shadow: 0 2px 4px rgba(220, 38, 38, 0.1);
+}
+
+.reset-btn:active {
+  transform: scale(0.98);
+}
+
+/* Optionnel : alignement dans le conteneur Points-total */
+.Points-total {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* Aligne le texte et le bouton à gauche */
+  gap: 5px;
+}

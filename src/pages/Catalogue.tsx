@@ -78,7 +78,7 @@ export function Catalogue() {
                 {allThemes.length > 0 ? (
                     allThemes.map((themeItem) => {
                         const userStat = stats.find(s => s.theme === themeItem.name);
-                        const isLowScore = userStat && userStat.moyenne_perso <= 2;
+                        const isLowScore = userStat && userStat.moyenne_perso <= 2.5;
 
                         return (
                             <Link
