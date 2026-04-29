@@ -190,10 +190,9 @@
   transform: scale(0.98);
 }
 
-/* Optionnel : alignement dans le conteneur Points-total */
 .Points-total {
   display: flex;
   flex-direction: column;
-  align-items: flex-start; /* Aligne le texte et le bouton à gauche */
+  align-items: flex-start;
   gap: 5px;
 }

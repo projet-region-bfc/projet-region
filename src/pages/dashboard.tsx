@@ -33,9 +33,7 @@ export function Dashboard() {
         if (confirmation) {
             try {
                 await deleteQuestionnaireSession(user.id, selectedRole);
-                // Met à jour l'état global (le menu changera tout seul)
                 await refreshQuestionnaireStatus(user.id, selectedRole);
-                // Rafraîchit les données du dashboard
                 setTotalPoints(null);
                 setAllThemes([]);
                 alert("Session réinitialisée ! Vous pouvez refaire le questionnaire.");
@@ -129,7 +127,7 @@ export function Dashboard() {
                 {questionnaireFait && (
                     <button
                         onClick={handleReset}
-                        className="reset-btn" // Tu pourras créer la classe plus tard ou laisser tel quel
+                        className="reset-btn"
                         style={{ cursor: 'pointer', marginTop: '10px' }}
                     >
                         Réinitialiser mon questionnaire {selectedRole === 'manager' ? 'Manager' : 'Agent'}
