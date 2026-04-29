@@ -61,7 +61,7 @@ export const deleteQuestionnaireSession = async (userId: string, role: string) =
         .from('questionnaire_sessions')
         .delete()
         .eq('profile_id', userId)
-        .eq('role', role.toLowerCase());
+        .eq('role' as any, role.toLowerCase());
 
     if (error) throw error;
     return data;
