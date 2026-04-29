@@ -45,7 +45,7 @@ export function Login() {
             </header>
 
             <section className="login-card">
-                <form onSubmit={handleSignIn} className="login-form">
+                <form onSubmit={handleSignIn} method="post" className="login-form">
                     
                     <div className="form-group">
                         <label className="form-label">Mail professionnel</label>
@@ -89,9 +89,9 @@ export function Login() {
                 </p>
             </section>
 
-            <Link to="/signup" className="footer-link">
-                Vous n'avez pas de compte ? <span>Inscrivez-vous</span>
-            </Link>
+            {/*<Link to="/signup" className="footer-link">*/}
+            {/*    Vous n'avez pas de compte ? <span>Inscrivez-vous</span>*/}
+            {/*</Link>*/}
         </main>
     );
 }

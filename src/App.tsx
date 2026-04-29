@@ -2,7 +2,7 @@ import { Routes, Route, Navigate, Outlet, HashRouter } from "react-router-dom";
 
 
 import { Login } from "./pages/login.tsx";
-import { Signup } from "./pages/signup.tsx";
+// import { Signup } from "./pages/signup.tsx";
 import { Dashboard } from "./pages/dashboard.tsx";
 import { Questionnaire } from "./pages/Questionnaire.tsx";
 import { Catalogue } from './pages/Catalogue.tsx';
@@ -49,7 +49,7 @@ function App() {
             <HashRouter>
                 <Routes>
                     <Route path="/login" element={session ? <Navigate to="/dashboard" replace /> : <Login />} />
-                    <Route path="/signup" element={session ? <Navigate to="/dashboard" replace /> : <Signup />} />
+                    {/*<Route path="/signup" element={session ? <Navigate to="/dashboard" replace /> : <Signup />} />*/}
                     <Route element={<ProtectedRoute />}>
                         <Route element={<LayoutAvecMenu />}>
                             <Route path="/" element={<Navigate to="/dashboard" replace />} />
